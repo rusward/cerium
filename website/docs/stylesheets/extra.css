@@ -6,8 +6,24 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../assets/fonts/jetbrains-mono-regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("../assets/fonts/jetbrains-mono-bold.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 :root {
-  --cerium-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --cerium-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --cerium-pixel: "Handjet", var(--cerium-mono);
   --cerium-bg: #000000;
   --cerium-surface: #050505;
@@ -192,6 +208,10 @@ body::after {
 }
 
 .md-typeset a:hover {
+  text-decoration-thickness: 2px;
+}
+
+.md-typeset a:not(.cerium-button):not(.cerium-text-link):not(.cerium-card):hover {
   background: #ffffff;
   color: #000000;
   text-decoration: none;
@@ -380,6 +400,14 @@ body::after {
 .cerium-button--primary:hover,
 .cerium-button--primary:focus-visible {
   background: #000000;
+  color: #ffffff !important;
+}
+
+/* Beat Material's .md-typeset a:hover specificity for the primary button. */
+.md-typeset a.cerium-button--primary:hover,
+.md-typeset a.cerium-button--primary:focus-visible {
+  border-color: #ffffff !important;
+  background: #000000 !important;
   color: #ffffff !important;
 }
 
