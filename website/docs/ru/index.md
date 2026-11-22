@@ -7,11 +7,10 @@ hide:
 ---
 
 <div class="cerium-hero">
-  <div class="cerium-hero__glow" aria-hidden="true"></div>
   <div class="cerium-hero__inner">
     <div class="cerium-hero__copy">
       <p class="cerium-eyebrow">СТРОГАЯ ТИПИЗАЦИЯ · БЭКЕНД C99</p>
-      <h1>Cerium</h1>
+      <h1 class="cerium-glitch" data-text="Cerium">Cerium</h1>
       <p class="cerium-lead">
         Небольшой язык с C#-подобным синтаксисом, строгими типами и нативными бинарниками.
       </p>
@@ -21,7 +20,14 @@ hide:
         <a class="cerium-text-link" href="https://github.com/rusward/cerium">GitHub →</a>
       </div>
     </div>
-    <img class="cerium-mascot" src="../assets/cerium-mascot.png" alt="Маскот Cerium">
+    <div class="cerium-terminal" aria-label="Пример работы в терминале">
+      <div class="cerium-terminal__bar">ceriumc / build</div>
+      <pre><span class="cerium-prompt">$</span> ceriumc build hello.ce -o hello
+<span class="cerium-ok">[ok]</span> native binary written
+<span class="cerium-prompt">$</span> ./hello
+hello, cerium
+<span class="cerium-cursor">█</span></pre>
+    </div>
   </div>
 </div>
 

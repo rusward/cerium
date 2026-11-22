@@ -14,24 +14,12 @@ theme:
   name: material
   custom_dir: overrides
   language: en
-  logo: assets/cerium-icon.png
-  favicon: assets/cerium-icon.png
+  favicon: assets/favicon.png
   font: false
   palette:
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
+    - scheme: slate
       primary: custom
       accent: custom
-      toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
-    - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: custom
-      accent: custom
-      toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
   features:
     - navigation.sections
     - navigation.indexes
@@ -104,10 +92,6 @@ extra_javascript:
 
 extra:
   generator: false
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/rusward/cerium
-      name: Cerium on GitHub
 
 nav:
   - Home: index.md

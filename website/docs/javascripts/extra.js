@@ -1,6 +1,18 @@
 (() => {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (!("IntersectionObserver" in window)) return;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const heading of document.querySelectorAll(".md-typeset h1")) {
+    if (!heading.dataset.text) {
+      const clone = heading.cloneNode(true);
+      for (const permalink of clone.querySelectorAll(".headerlink")) {
+        permalink.remove();
+      }
+      heading.dataset.text = clone.textContent.trim();
+    }
+    heading.classList.add("cerium-glitch");
+  }
+
+  if (reduceMotion || !("IntersectionObserver" in window)) return;
 
   const cards = document.querySelectorAll(".cerium-card");
   if (!cards.length) return;
