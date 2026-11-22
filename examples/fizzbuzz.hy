@@ -1,0 +1,14 @@
+// fizzbuzz.hy - loops, modulo and if/else if/else.
+int i = 1;
+while (i <= 15) {
+    if (i % 15 == 0) {
+        log("FizzBuzz");
+    } else if (i % 3 == 0) {
+        log("Fizz");
+    } else if (i % 5 == 0) {
+        log("Buzz");
+    } else {
+        log(i);
+    }
+    i = i + 1;
+}

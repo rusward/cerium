@@ -1,0 +1,27 @@
+// loops.hy - for, loop, break and continue.
+int sum = 0;
+for (int i = 1; i <= 5; i = i + 1) {
+    sum = sum + i;
+}
+log("sum =", sum);
+
+int evens = 0;
+for (int i = 0; i < 10; i = i + 1) {
+    if (i % 2 != 0) {
+        continue;
+    }
+    if (i > 6) {
+        break;
+    }
+    evens = evens + i;
+}
+log("evens =", evens);
+
+int n = 0;
+loop {
+    n = n + 1;
+    if (n == 3) {
+        break;
+    }
+}
+log("n =", n);

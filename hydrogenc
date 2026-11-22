@@ -1,0 +1,9 @@
+#!/bin/sh
+# Launcher for the Hydrogen compiler.
+set -eu
+
+DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PYTHONPATH="$DIR/src${PYTHONPATH:+:$PYTHONPATH}"
+export PYTHONPATH
+
+exec "${PYTHON:-python3}" -m hydrogenc "$@"

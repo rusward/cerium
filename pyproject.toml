@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hydrogenc"
+version = "0.2.0"
+description = "Hydrogen: a small statically typed language with a C99 backend"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Hydrogen contributors" }]
+keywords = ["compiler", "programming-language", "c99", "hydrogen"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Compilers",
+]
+dependencies = []
+
+[project.scripts]
+hydrogenc = "hydrogenc.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/rusward/hydrogen"
+Repository = "https://github.com/rusward/hydrogen"
+Issues = "https://github.com/rusward/hydrogen/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]

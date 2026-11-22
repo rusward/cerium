@@ -1,0 +1,2 @@
+// break is only valid inside a loop.
+break;

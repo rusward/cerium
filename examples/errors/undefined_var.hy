@@ -1,0 +1,2 @@
+// Undefined variable.
+log(missing);
