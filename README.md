@@ -5,7 +5,7 @@
 <h1 align="center">Cerium</h1>
 
 <p align="center">
-  Небольшой статически типизированный язык с C#-подобным синтаксисом и собственным характером.
+  A small statically typed language with C#-like syntax and a character of its own.
 </p>
 
 <p align="center">
@@ -19,25 +19,25 @@
   <img src="https://img.shields.io/badge/backend-C99%20%2B%20gcc-lightgrey.svg" alt="C99 backend">
 </p>
 
-Cerium (`ceriumc`) компилирует `.ce` в C99 и собирает нативный бинарник через `gcc`.
-Функции объявляются через `func ... -> тип`, структуры собираются литералами без `new`,
-а циклы бывают трёх видов — `while`, `for` и `loop`.
+Cerium (`ceriumc`) compiles `.ce` to C99 and builds a native binary with `gcc`.
+Functions are declared with `func ... -> type`, structs are built with literals and no `new`,
+and there are three loop forms — `while`, `for`, and `loop`.
 
-> **Статус:** ранняя версия 0.5.0. Язык и синтаксис ещё могут меняться.
+> **Status:** early version 0.5.0. The language and syntax may still change.
 
-## Возможности
+## Features
 
-- строгие типы `int` (64 бита), `double`, `bool`, `string` без неявных преобразований;
-- функции, параметры, возвращаемые значения, рекурсия и вызовы вперёд;
-- структуры с полями, литералы `Point { x = 1, y = 2 }`, доступ и присваивание полей;
-- передача и возврат структур по значению;
+- strict types `int` (64-bit), `double`, `bool`, `string` with no implicit conversions;
+- functions, parameters, return values, recursion, and forward calls;
+- structs with fields, literals `Point { x = 1, y = 2 }`, field access and assignment;
+- structs passed to and returned from functions by value;
 - `if / else if / else`, `while`, `for`, `loop`, `break`, `continue`;
-- вывод через `log(...)` и ввод с консоли: `input()`, `inputInt()`, `inputDouble()`, `inputBool()`;
-- явные преобразования: `toString`, `toInt`, `toDouble`, `toBool`;
-- блочные области видимости и подробная диагностика с позицией в `.ce`;
-- компилятор на Python без внешних зависимостей.
+- output via `log(...)` and console input: `input()`, `inputInt()`, `inputDouble()`, `inputBool()`;
+- explicit conversions: `toString`, `toInt`, `toDouble`, `toBool`;
+- block scoping and detailed diagnostics with positions in `.ce` files;
+- a compiler written in Python with no external dependencies.
 
-## Пример
+## Example
 
 ```csharp
 struct Point {
@@ -70,7 +70,7 @@ step 2
 step 3
 ```
 
-## Ввод с консоли
+## Console input
 
 ```csharp
 string name = input("Name: ");
@@ -82,13 +82,13 @@ log("hello,", name);
 log(age, height, ok);
 ```
 
-Промпт необязателен, печатается без перевода строки и сразу сбрасывается. Ввод читается
-по одной строке. Типизированные функции разбирают строку целиком, а при неверном формате
-или EOF завершают программу с `runtime error` и кодом 1.
+The prompt is optional. It is printed without a trailing newline and flushed immediately.
+Each call reads one line. Typed functions parse the whole line and terminate the program with a
+`runtime error` and exit code 1 on invalid input or EOF.
 
-## Преобразования типов
+## Type conversions
 
-Неявных преобразований нет, поэтому тип меняется явно:
+There are no implicit conversions, so types change explicitly:
 
 ```csharp
 log("answer: " + toString(42));
@@ -99,18 +99,18 @@ bool enabled = toBool("true");
 log(port, ratio, enabled); // 8080 0.25 true
 ```
 
-`toString` принимает `int`, `double`, `bool` или `string`. `toInt`, `toDouble`,
-`toBool` принимают строку, обрезают пробелы по краям и при неверном формате завершают
-программу с `runtime error`.
+`toString` accepts `int`, `double`, `bool`, or `string`. `toInt`, `toDouble`, and `toBool`
+accept a string, trim surrounding whitespace, and terminate with a `runtime error` if the text
+does not parse.
 
-## Требования
+## Requirements
 
 - Python 3.10+
-- C99-компилятор (`gcc` по умолчанию)
+- A C99 compiler (`gcc` by default)
 
-Проект разрабатывается и тестируется на Linux x86-64.
+Cerium is developed and tested on Linux x86-64.
 
-## Установка
+## Installation
 
 ```sh
 git clone https://github.com/rusward/cerium.git
@@ -120,7 +120,7 @@ python3 -m pip install -e .
 ceriumc --version
 ```
 
-Можно обойтись без установки — в корне лежит launcher:
+You can also run the launcher from the repository root without installing:
 
 ```sh
 ./ceriumc --version
@@ -137,50 +137,51 @@ ceriumc emit-c <file.ce> [-o out.c]
 ceriumc --version
 ```
 
-- `build` собирает нативный бинарник;
-- `check` проверяет синтаксис и типы без вызова C-компилятора;
-- `emit-c` печатает сгенерированный C;
-- `--emit-c PATH` сохраняет C-код при сборке;
-- `--keep-c` оставляет временный C-файл;
-- `--cc NAME` выбирает C-компилятор.
+- `build` compiles a native binary;
+- `check` validates syntax and types without invoking the C compiler;
+- `emit-c` prints the generated C;
+- `--emit-c PATH` saves the C source during a build;
+- `--keep-c` keeps the temporary C file;
+- `--cc NAME` selects the C compiler.
 
-Коды возврата: `0` — успех, `1` — ошибка компиляции/типов/рантайма, `2` — ошибка
-использования CLI, `3` — сбой C-компилятора.
+Exit codes: `0` success, `1` compilation/type/runtime error, `2` CLI usage error, `3` C
+backend failure.
 
-## Тесты
+## Tests
 
 ```sh
 make test
 ```
 
-End-to-end тесты собирают настоящие бинарники и пропускаются, если `gcc` не найден.
+End-to-end tests compile real binaries and are skipped automatically when `gcc` is not
+available.
 
-## Структура проекта
+## Project structure
 
 ```
-src/ceriumc/    компилятор (лексер, парсер, проверка типов, кодоген)
-examples/         примеры программ и примеры ошибок
-tests/            unittest-набор
-docs/syntax.md    практическое руководство по синтаксису (на русском)
-SPEC.md           формальная грамматика и семантика
-logo/             ассеты логотипа
+src/ceriumc/     compiler (lexer, parser, type checker, codegen)
+examples/        sample programs and intentional error cases
+tests/           unittest suite
+docs/syntax.md   practical syntax guide
+SPEC.md          formal grammar and semantics
+logo/            logo assets
 ```
 
-## Документация
+## Documentation
 
-- [docs/syntax.md](docs/syntax.md) — синтаксис и примеры на русском.
-- [SPEC.md](SPEC.md) — грамматика EBNF, типы, семантика и диагностика.
-- [CHANGELOG.md](CHANGELOG.md) — история изменений.
-- [CONTRIBUTING.md](CONTRIBUTING.md) — как собрать, тестировать и присылать изменения.
+- [docs/syntax.md](docs/syntax.md) — syntax guide and examples.
+- [SPEC.md](SPEC.md) — EBNF grammar, types, semantics, and diagnostics.
+- [CHANGELOG.md](CHANGELOG.md) — change history.
+- [CONTRIBUTING.md](CONTRIBUTING.md) — how to build, test, and contribute.
 
-## Планы
+## Roadmap
 
-- массивы и `foreach`;
+- arrays and `foreach`;
 - `switch`;
-- строковые и математические функции в стандартной библиотеке;
-- модули/импорты;
-- публикация пакета и релизные бинарники.
+- string and math functions in the standard library;
+- modules/imports;
+- package publication and release binaries.
 
-## Лицензия
+## License
 
 [MIT](LICENSE) © Cerium contributors.

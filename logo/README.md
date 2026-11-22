@@ -1,7 +1,7 @@
 # Logo
 
-- `cerium-logo-ref.png` — актуальный референс Cerium: маскот с элементом Ce (1536×1024).
-  Используется в шапке README.
+- `cerium-logo-ref.png` — the current Cerium reference: a mascot holding the Ce element tile
+  (1536×1024). It is used in the README header.
 
-Финальные ассеты (иконка, квадратная аватарка, светлый/тёмный варианты) можно добавить
-сюда позже и обновить ссылку в `README.md`.
+Final assets (icon, square avatar, light and dark variants) can be added here later, followed
+by an update to the image reference in `README.md`.

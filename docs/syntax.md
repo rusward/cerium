@@ -1,14 +1,14 @@
-# Синтаксис Cerium
+# Cerium syntax
 
-Документация по языку Cerium версии 0.5. Формальная грамматика в EBNF — в
-[SPEC.md](../SPEC.md).
+Documentation for Cerium version 0.5. The formal EBNF grammar is in [SPEC.md](../SPEC.md).
 
-## 0. Чем Cerium отличается
+## 0. What makes Cerium different
 
-Синтаксис знакомый, если вы писали на C# или Java, но у языка есть свой почерк:
+The syntax will feel familiar if you have written C# or Java, but the language has its own
+character:
 
 ```csharp
-func add(int a, int b) -> int {   // func + стрелка возвращаемого типа
+func add(int a, int b) -> int {   // func plus an arrow return type
     return a + b;
 }
 
@@ -17,27 +17,27 @@ struct Point {
     int y;
 }
 
-Point p = Point { x = 3, y = 4 }; // литерал структуры без new
+Point p = Point { x = 3, y = 4 }; // struct literal without new
 for (int i = 0; i < 3; i = i + 1) { ... }
-loop { ... break; }               // бесконечный цикл
+loop { ... break; }               // infinite loop
 ```
 
-- фигурные скобки обязательны всегда;
-- точки с запятой завершают простые операторы;
-- отступы не влияют на разбор;
-- строки только в двойных кавычках;
-- `log(...)` — единственная встроенная функция.
+- braces are always required;
+- semicolons terminate simple statements;
+- indentation does not affect parsing;
+- strings use double quotes only;
+- `log(...)` is the primary built-in output function.
 
-## 1. Структура программы
+## 1. Program structure
 
-Программа — файл `.ce`. Внутри могут быть:
+A program is a `.ce` file. It may contain:
 
-- объявления структур (`struct`);
-- объявления функций (`func`);
-- операторы верхнего уровня.
+- struct declarations (`struct`);
+- function declarations (`func`);
+- top-level statements.
 
-Операторы верхнего уровня выполняются сверху вниз и образуют тело неявной функции `main`.
-Объявления структур и функций на верхнем уровне видны всей программе, независимо от порядка.
+Top-level statements execute from top to bottom and form the body of an implicit `main`.
+Struct and function declarations are visible throughout the program regardless of their order.
 
 ```csharp
 func twice(int x) -> int {
@@ -47,37 +47,37 @@ func twice(int x) -> int {
 log(twice(21)); // 42
 ```
 
-Пустая программа допустима. Пользовательская `func main()` не является точкой входа: она
-обычная функция, а вход — операторы верхнего уровня.
+An empty program is valid. A user-defined `func main()` is not the entry point: it is an
+ordinary function, while the entry point is the top-level statement sequence.
 
-Правила:
+Rules:
 
-- регистр имеет значение;
-- переводы строк и отступы не влияют на синтаксис;
-- простые операторы заканчиваются `;`, после блоков `{ }` точка с запятой не нужна.
+- names are case-sensitive;
+- line breaks and indentation do not affect syntax;
+- simple statements end with `;`; no semicolon is needed after a `{ }` block.
 
-## 2. Комментарии
+## 2. Comments
 
 ```csharp
-// Комментарий до конца строки.
+// A comment until the end of the line.
 
 /*
-   Блочный комментарий.
-   Вложенные блочные комментарии не поддерживаются.
+   A block comment.
+   Nested block comments are not supported.
 */
 ```
 
-## 3. Идентификаторы и ключевые слова
+## 3. Identifiers and keywords
 
-Идентификатор:
+An identifier is:
 
 ```
 [A-Za-z_][A-Za-z0-9_]*
 ```
 
-Только латиница, цифры и `_`; начинаться с цифры нельзя.
+Only Latin letters, digits, and `_` are allowed; an identifier cannot start with a digit.
 
-Зарезервированные слова:
+Reserved words:
 
 ```
 int  double  bool  string  void
@@ -86,20 +86,21 @@ if  else  while  for  loop  break  continue
 true  false
 ```
 
-`log` не является ключевым словом, но это встроенная функция, и объявить свою `func log`
-нельзя.
+`log` is not a keyword, but it is a built-in function, and declaring your own `func log` is not
+allowed. The same applies to the other built-ins listed in [SPEC.md](../SPEC.md).
 
-## 4. Типы
+## 4. Types
 
-| Тип      | Что хранит                  | Размер / формат             |
-|----------|-----------------------------|-----------------------------|
-| `int`    | целое число со знаком       | 64 бита, дополнительный код |
-| `double` | число с плавающей точкой    | IEEE-754 binary64           |
-| `bool`   | `true` или `false`          | логический                  |
-| `string` | неизменяемая строка в UTF-8 | указатель на байты          |
+| Type     | Stores                          | Size / format                  |
+|----------|---------------------------------|--------------------------------|
+| `int`    | signed integer                  | 64-bit, two's complement       |
+| `double` | floating-point number           | IEEE-754 binary64              |
+| `bool`   | `true` or `false`               | boolean                        |
+| `string` | immutable UTF-8 string          | pointer to bytes               |
 
-Плюс типы, объявленные через `struct`. Неявных преобразований нет: `int` и `double` нельзя
-смешивать, строку нельзя присвоить в `int`. Приведений типов в MVP нет.
+Struct names introduce additional value types. There are no implicit conversions: `int` and
+`double` cannot be mixed, and a string cannot be assigned to an `int`. There are no type casts;
+explicit conversion functions are covered in §8.2.
 
 ```csharp
 int count = 10;
@@ -108,64 +109,66 @@ bool ready = false;
 string label = "cerium";
 ```
 
-## 5. Литералы
+## 5. Literals
 
-### Целые числа
+### Integers
 
-Только десятичные цифры:
+Decimal digits only:
 
 ```csharp
 int a = 0;
 int b = 42;
-int c = -7; // унарный минус и литерал 7
+int c = -7; // unary minus applied to the literal 7
 ```
 
-Нет шестнадцатеричных, двоичных, восьмеричных литералов и `_`-разделителей. Диапазон
-литерала — от `0` до `9223372036854775807`.
+There are no hexadecimal, binary, octal, or `_`-separated literals. A literal must be in the
+range `0` through `9223372036854775807`.
 
-### Числа с плавающей точкой
+### Floating-point numbers
 
-Обязательны цифры слева и справа от точки:
+Digits are required on both sides of the decimal point:
 
 ```csharp
 double pi = 3.14;
 double zero = 0.0;
 ```
 
-Нет экспоненциальной записи, форм `.5` и `5.`.
+There is no exponent notation in literals, and forms such as `.5` or `5.` are not allowed.
 
-### Логические значения
+### Booleans
 
 ```csharp
 bool yes = true;
 bool no = false;
 ```
 
-### Строки
+Only lowercase forms are valid.
 
-Только двойные кавычки. Escape-последовательности:
+### Strings
 
-| Запись | Значение             |
-|--------|----------------------|
-| `\n`   | перевод строки       |
-| `\t`   | табуляция            |
-| `\r`   | возврат каретки      |
-| `\\`   | обратная косая черта |
-| `\"`   | двойная кавычка      |
+Double quotes only. Supported escape sequences:
+
+| Escape | Meaning          |
+|--------|------------------|
+| `\n`   | line feed        |
+| `\t`   | tab              |
+| `\r`   | carriage return  |
+| `\\`   | backslash        |
+| `\"`   | double quote     |
 
 ```csharp
-log("первая строка\nвторая строка");
-log("кавычка: \" и слэш: \\");
+log("first line\nsecond line");
+log("quote: \" and slash: \\");
 ```
 
-Одинарные кавычки, символьные литералы и интерполяция строк не поддерживаются. Внутри
-строки не может быть настоящего перевода строки — используйте `\n`.
+Single quotes, character literals, and string interpolation are not supported. A real newline
+cannot appear inside a string; use `\n`.
 
-## 6. Переменные
+## 6. Variables
 
-### Объявление
+### Declaration
 
-`тип имя = выражение;`. Инициализация обязательна.
+The form is `type name = expression;`. An initializer is required.
 
 ```csharp
 int age = 25;
@@ -174,9 +177,9 @@ bool enabled = true;
 string name = "Alice";
 ```
 
-`int x;` не поддерживается.
+`int x;` is not supported.
 
-### Присваивание
+### Assignment
 
 ```csharp
 int x = 1;
@@ -184,19 +187,19 @@ x = x + 10;
 x = 42;
 ```
 
-`x = 1;` не объявляет переменную: имя должно быть объявлено раньше. Тип фиксируется при
-объявлении.
+`x = 1;` does not declare a variable: the name must already exist. A variable's type is fixed
+at declaration.
 
 ```csharp
 int n = 1;
-n = 2;         // ок
-// n = 2.5;    // ошибка
-// n = "no";   // ошибка
+n = 2;         // ok
+// n = 2.5;    // error
+// n = "no";   // error
 ```
 
-## 7. Выражения и операторы
+## 7. Expressions and operators
 
-### Арифметика
+### Arithmetic
 
 ```csharp
 int a = 17;
@@ -205,47 +208,48 @@ int b = 5;
 log(a + b); // 22
 log(a - b); // 12
 log(a * b); // 85
-log(a / b); // 3 (усечение к нулю)
+log(a / b); // 3 (truncates toward zero)
 log(a % b); // 2
 ```
 
-- `+ - * / %` работают с `int`;
-- `+ - * /` работают с `double`, `%` для `double` запрещён;
-- операнды обязаны иметь одинаковый тип;
-- переполнение `int` заворачивается по правилам дополнительного кода;
-- `INT64_MIN / -1` даёт `INT64_MIN`, `INT64_MIN % -1` даёт `0`.
+- `+ - * / %` work with `int`;
+- `+ - * /` work with `double`; `%` is not allowed for `double`;
+- both operands must have the same type;
+- `int` overflow wraps according to two's-complement rules;
+- `INT64_MIN / -1` yields `INT64_MIN`, and `INT64_MIN % -1` yields `0`.
 
-### Строки
+### Strings
 
-`+` конкатенирует две строки:
+`+` concatenates two strings:
 
 ```csharp
 string greeting = "hello, " + "world";
 log(greeting); // hello, world
 ```
 
-Строка и число не складываются:
+A string and a number cannot be added directly:
 
 ```csharp
-log("n =", 42); // правильно
-// log("n = " + 42); // ошибка типов
+log("n =", 42); // correct
+// log("n = " + 42); // type error
+// log("n = " + toString(42)); // correct
 ```
 
-### Сравнения
+### Comparisons
 
 ```csharp
 log(1 < 2);       // true
 log(2 <= 2);      // true
 log(1 == 1);      // true
-log("a" == "a");  // true, сравнение содержимого
+log("a" == "a");  // true, contents are compared
 log("a" != "b");  // true
 ```
 
-- `< <= > >=` — только `int` и `double` одного типа;
-- `== !=` — `int`, `double`, `bool`, `string` одного типа;
-- структуры сравнивать нельзя.
+- `< <= > >=` work only with `int` and `double` of the same type;
+- `== !=` work with `int`, `double`, `bool`, and `string` of the same type;
+- structs cannot be compared.
 
-### Логика
+### Logic
 
 ```csharp
 bool a = true;
@@ -256,71 +260,79 @@ log(a || b); // true
 log(!a);     // false
 ```
 
-Операнды — строго `bool`, вычисление с коротким замыканием.
+Operands must be `bool`; evaluation short-circuits.
 
-### Скобки и приоритет
+### Parentheses and precedence
 
-От высокого к низкому:
+From highest to lowest:
 
-| Приоритет | Операторы              |
-|-----------|------------------------|
-| 1         | `!`, унарный `-`       |
-| 2         | `*`, `/`, `%`          |
-| 3         | `+`, `-`               |
-| 4         | `<`, `<=`, `>`, `>=`   |
-| 5         | `==`, `!=`             |
-| 6         | `&&`                   |
-| 7         | `\|\|`                 |
+| Precedence | Operators              |
+|------------|------------------------|
+| 1          | `!`, unary `-`         |
+| 2          | `*`, `/`, `%`          |
+| 3          | `+`, `-`               |
+| 4          | `<`, `<=`, `>`, `>=`   |
+| 5          | `==`, `!=`             |
+| 6          | `&&`                   |
+| 7          | `\|\|`                 |
 
 ```csharp
 log(1 + 2 * 3);   // 7
 log((1 + 2) * 3); // 9
 ```
 
-### Выражения как операторы
+### Expression statements
 
-Самостоятельным оператором может быть только вызов функции:
+Only a function call may be used as a standalone statement:
 
 ```csharp
-log("ok");       // ок
-f();             // ок, результат можно не использовать
-// 1 + 2;        // ошибка: выражение-оператор должно быть вызовом
+log("ok");       // ok
+f();             // ok, the result may be discarded
+// 1 + 2;        // error: an expression statement must be a function call
 ```
 
-## 8. Вывод: `log`
+## 8. Output: `log`
 
 ```csharp
 log("hello");
 log("n =", 42);
 log("pi =", 3.14, "ok =", true);
-log(); // пустая строка
+log(); // prints an empty line
 ```
 
-- аргументы печатаются в stdout через пробел;
-- в конце добавляется `\n`;
-- `int` — десятичное число;
-- `double` — `%g` (`3.14`, `10`, `0.5`);
-- `bool` — `true`/`false`;
-- `string` — как есть.
+- arguments are printed to stdout separated by one space;
+- a newline is appended at the end;
+- `int` prints as a decimal number;
+- `double` uses `%g` (`3.14`, `10`, `0.5`);
+- `bool` prints as `true` or `false`;
+- `string` prints as-is.
 
-`log` возвращает `void` и не принимает структуры целиком:
+`log` returns `void` and does not accept structs as a whole:
 
 ```csharp
-// log(log("nested")); // ошибка
-// log(point);         // ошибка, печатайте поля
+// log(log("nested")); // error
+// log(point);         // error, print its fields instead
 ```
 
-## 8.1. Ввод: `input`
+Because `log` separates every argument with a space, use string concatenation when exact
+formatting matters:
 
-| Функция             | Аргумент          | Результат |
-|---------------------|-------------------|-----------|
-| `input()`           | необязательный промпт | `string` |
-| `inputInt()`        | необязательный промпт | `int`    |
-| `inputDouble()`     | необязательный промпт | `double` |
-| `inputBool()`       | необязательный промпт | `bool`   |
+```csharp
+log("AVATAR: (", value, ")");              // AVATAR: ( value )
+log("AVATAR: (" + toString(value) + ")");  // AVATAR: (value)
+```
 
-Промпт — строковое выражение. Он печатается в stdout без перевода строки и сразу
-сбрасывается, чтобы приглашение появилось до чтения:
+## 8.1 Input: `input`
+
+| Function          | Argument               | Result   |
+|-------------------|------------------------|----------|
+| `input()`         | optional prompt        | `string` |
+| `inputInt()`      | optional prompt        | `int`    |
+| `inputDouble()`   | optional prompt        | `double` |
+| `inputBool()`     | optional prompt        | `bool`   |
+
+The prompt is a string expression. It is printed to stdout without a newline and flushed
+immediately so that it appears before the program waits for input:
 
 ```csharp
 string name = input("Name: ");
@@ -332,47 +344,47 @@ log("hello,", name);
 log(age, height, ok);
 ```
 
-Правила:
+Rules:
 
-- каждый вызов читает одну строку из stdin;
-- завершающие `\n` и `\r` отрезаются;
-- `input()` сохраняет остальные символы, включая пробелы по краям;
-- пустая строка — нормальное значение `input()` (пустая строка);
-- конец ввода (EOF) до первого символа — ошибка рантайма, даже для `input()`;
-- `inputInt`, `inputDouble`, `inputBool` обрезают пробелы и табуляцию по краям и
-  разбирают строку целиком:
-  - `inputInt` — знак и десятичные цифры, диапазон 64-битного `int`;
-  - `inputDouble` — десятичная запись, которую понимает C `strtod`, включая дробную
-    часть и экспоненту (`1.5e2`);
-  - `inputBool` — строго `true` или `false`.
+- each call reads one line from stdin;
+- trailing `\n` and `\r` are removed;
+- `input()` preserves the rest of the line, including surrounding spaces;
+- an empty line is a valid `input()` value (an empty string);
+- end of input (EOF) before the first character is a runtime error, even for `input()`;
+- `inputInt`, `inputDouble`, and `inputBool` trim spaces and tabs on both sides and parse the
+  entire remaining text:
+  - `inputInt` accepts an optional sign and decimal digits within the 64-bit `int` range;
+  - `inputDouble` accepts the decimal forms understood by C `strtod`, including fractions and
+    exponents (`1.5e2`);
+  - `inputBool` accepts exactly `true` or `false`.
 
-При неверном вводе программа печатает ошибку и завершается с кодом 1:
+Invalid input terminates the program with an error and exit code 1:
 
 ```
 runtime error: invalid int input: '12abc': program.ce:3
 runtime error: unexpected end of input: program.ce:5
 ```
 
-Встроенные функции ввода нельзя переопределить через `func input(...)`.
+The input built-ins cannot be redefined with `func input(...)`.
 
 ```csharp
-int n = inputInt();        // ввод: 41
+int n = inputInt();        // input: 41
 log(n + 1);                // 42
 
-string text = input();     // ввод: hello world
+string text = input();     // input: hello world
 log("[" + text + "]");     // [hello world]
 ```
 
-## 8.2. Преобразования типов
+## 8.2 Type conversions
 
-Неявных преобразований нет, поэтому для смены типа используются явные функции:
+There are no implicit conversions, so types are changed explicitly:
 
-| Функция             | Аргумент       | Результат |
-|---------------------|----------------|-----------|
-| `toString(value)`   | `int`, `double`, `bool` или `string` | `string` |
-| `toInt(text)`       | `string`       | `int`     |
-| `toDouble(text)`    | `string`       | `double`  |
-| `toBool(text)`      | `string`       | `bool`    |
+| Function          | Argument                            | Result   |
+|-------------------|-------------------------------------|----------|
+| `toString(value)` | `int`, `double`, `bool`, or `string` | `string` |
+| `toInt(text)`     | `string`                            | `int`    |
+| `toDouble(text)`  | `string`                            | `double` |
+| `toBool(text)`    | `string`                            | `bool`   |
 
 ```csharp
 string label = "answer: " + toString(42);
@@ -386,22 +398,22 @@ log(ratio);   // 0.25
 log(enabled); // true
 ```
 
-Правила:
+Rules:
 
-- `toString` принимает один скаляр. `int` печатается десятичным числом, `double` — в
-  формате `%g` (как в `log`), `bool` — как `true`/`false`, строка возвращается как есть;
-- структуру в `toString` передать нельзя — конвертируйте отдельные поля;
-- `toInt`, `toDouble`, `toBool` принимают только `string`, обрезают пробелы и табуляцию
-  по краям и разбирают оставшийся текст целиком;
-- форматы те же, что у `inputInt`, `inputDouble`, `inputBool`;
-- при неверном тексте — ошибка рантайма и код 1:
+- `toString` accepts one scalar. Integers print as decimal numbers, doubles use the same `%g`
+  format as `log`, booleans become `true`/`false`, and strings are returned unchanged;
+- structs cannot be passed to `toString`; convert individual fields instead;
+- `toInt`, `toDouble`, and `toBool` accept only `string`, trim spaces and tabs, and parse the
+  entire remaining text;
+- accepted formats match `inputInt`, `inputDouble`, and `inputBool`;
+- invalid text raises a runtime error and exits with code 1:
 
 ```
 runtime error: invalid int value: '12abc': program.ce:3
 runtime error: invalid bool value: 'yes': program.ce:7
 ```
 
-Типичное применение — склеить число или `bool` со строкой:
+A typical use is concatenating a number or boolean with a string:
 
 ```csharp
 struct User {
@@ -419,7 +431,7 @@ USERNAME: (TeamLED)
 AVATAR: (87123712)
 ```
 
-## 9. Условия
+## 9. Conditions
 
 ```csharp
 int score = 75;
@@ -433,13 +445,13 @@ if (score >= 90) {
 }
 ```
 
-- условие в скобках и строго типа `bool`;
-- фигурные скобки обязательны;
-- `else` необязателен, цепочка `else if` любой длины;
-- пустой блок `{ }` допустим;
-- truthiness отсутствует: `if (1)` — ошибка.
+- the condition is written in parentheses and must have type `bool`;
+- braces are required;
+- `else` is optional, and an `else if` chain can be any length;
+- an empty block `{ }` is allowed;
+- there is no truthiness: `if (1)` is an error.
 
-## 10. Циклы
+## 10. Loops
 
 ### `while`
 
@@ -459,20 +471,20 @@ for (int i = 1; i <= 5; i = i + 1) {
 }
 ```
 
-Три части обязательны:
+All three parts are required:
 
-1. инициализация — объявление переменной с `=` или присваивание уже существующей;
-2. условие — выражение типа `bool`;
-3. обновление — присваивание переменной или полю.
+1. initialization — a variable declaration with `=`, or an assignment to an existing variable;
+2. condition — an expression of type `bool`;
+3. update — an assignment to a variable or a field.
 
-Переменная из инициализации видна только внутри цикла:
+A variable declared in the initialization is visible only inside the loop:
 
 ```csharp
 for (int i = 0; i < 3; i = i + 1) { ... }
-// log(i); // ошибка: i уже не существует
+// log(i); // error: i no longer exists
 ```
 
-В теле цикла можно присваивать полям:
+Fields may also be assigned inside the body:
 
 ```csharp
 Point p = Point { x = 0, y = 0 };
@@ -483,7 +495,7 @@ for (int i = 0; i < 3; i = i + 1) {
 
 ### `loop`
 
-Бесконечный цикл; выход обычно через `break`:
+An infinite loop, normally exited with `break`:
 
 ```csharp
 int n = 0;
@@ -496,12 +508,12 @@ loop {
 log(n); // 3
 ```
 
-### `break` и `continue`
+### `break` and `continue`
 
 ```csharp
 for (int i = 0; i < 10; i = i + 1) {
     if (i % 2 != 0) {
-        continue; // перейти к i = i + 1
+        continue; // jump to i = i + 1
     }
     if (i > 6) {
         break;
@@ -510,13 +522,13 @@ for (int i = 0; i < 10; i = i + 1) {
 }
 ```
 
-- `break` и `continue` допустимы только внутри `while`, `for` или `loop`;
-- `continue` в `for` всё равно выполняет блок обновления;
-- вне цикла — ошибка компиляции.
+- `break` and `continue` are valid only inside `while`, `for`, or `loop`;
+- `continue` in a `for` still executes the update clause;
+- using either outside a loop is a compile-time error.
 
-## 11. Блоки и области видимости
+## 11. Blocks and scope
 
-`if`, циклы и тела функций создают области видимости:
+`if`, loops, and function bodies introduce scopes:
 
 ```csharp
 int x = 1;
@@ -526,19 +538,19 @@ if (true) {
     log(x + y); // 3
 }
 
-// log(y); // ошибка: y не видна снаружи
+// log(y); // error: y is not visible here
 ```
 
-Правила:
+Rules:
 
-- переменная видна только в своём блоке и вложенных блоках;
-- затенять внешнюю переменную нельзя;
-- повторное объявление в одном блоке — ошибка;
-- использование до объявления — ошибка.
+- a variable is visible only in its block and nested blocks;
+- shadowing an outer variable is not allowed;
+- redeclaring a name in the same block is an error;
+- using a variable before its declaration is an error.
 
-## 12. Функции
+## 12. Functions
 
-### Объявление
+### Declaration
 
 ```csharp
 func add(int a, int b) -> int {
@@ -550,28 +562,28 @@ func greet(string name) -> void {
 }
 ```
 
-- `func` — ключевое слово, затем имя, параметры, `->` и тип результата;
-- `void` означает отсутствие результата;
-- параметры — `тип имя` через запятую;
-- тело — блок `{ }`;
-- функции объявляются только на верхнем уровне;
-- перегрузок нет: имена функций уникальны.
+- `func` is the keyword, followed by the name, parameters, `->`, and the return type;
+- `void` means no result;
+- parameters are written as `type name`, separated by commas;
+- the body is a `{ }` block;
+- functions may only be declared at the top level;
+- there is no overloading: function names are unique.
 
-### Вызов
+### Calls
 
 ```csharp
 log(add(2, 3)); // 5
 greet("cerium");
 ```
 
-Аргументы проверяются по количеству и типам. Результат можно игнорировать:
+Arguments are checked for count and type. A result may be discarded:
 
 ```csharp
-add(2, 3); // допустимо
+add(2, 3); // allowed
 ```
 
-Функции видны всей программе независимо от порядка объявления, поэтому возможны вызовы
-вперёд и взаимная рекурсия:
+Functions are visible throughout the program regardless of declaration order, so forward
+calls and mutual recursion are supported:
 
 ```csharp
 log(isEven(10)); // true
@@ -603,36 +615,37 @@ func sign(int x) -> int {
 func logTwice(string text) -> void {
     log(text);
     log(text);
-    return; // необязательно
+    return; // optional
 }
 ```
 
-- `return выражение;` возвращает значение;
-- `return;` допустим только в `void`-функции;
-- функция с результатом обязана вернуть значение на всех путях;
-- проверка консервативная: анализируются `if`/`else`, но не бесконечные циклы. Проще всего
-  завершать функцию `return` или `if`/`else`, где возвращают все ветки;
-- `return` вне функции — ошибка.
+- `return expression;` returns a value;
+- `return;` is only valid in a `void` function;
+- a function with a result must return a value on every path;
+- the check is conservative: `if`/`else` chains are analyzed, but infinite loops are not
+  treated as guaranteed returns. Ending a function with `return`, or with an `if`/`else` where
+  every branch returns, satisfies the check;
+- `return` outside a function is an error.
 
-### Область видимости функции
+### Function scope
 
-Тело функции имеет собственную область видимости. Параметры видны внутри, а переменные
-верхнего уровня — нет:
+A function body has its own scope. Parameters are visible inside it, but top-level variables are
+not:
 
 ```csharp
 int global = 10;
 
 func broken() -> int {
-    // return global; // ошибка: переменные верхнего уровня недоступны
+    // return global; // error: top-level variables are not visible
     return 0;
 }
 ```
 
-Параметры и локальные переменные не могут затенять друг друга.
+Parameters and local variables cannot shadow each other.
 
-## 13. Структуры
+## 13. Structs
 
-### Объявление
+### Declaration
 
 ```csharp
 struct Point {
@@ -646,50 +659,49 @@ struct User {
 }
 ```
 
-- объявляются только на верхнем уровне;
-- поля — `тип имя;`; тип поля обязан быть скалярным
-  (`int`, `double`, `bool`, `string`);
-- хотя бы одно поле;
-- имена полей уникальны;
-- вложенные структуры в v0.5 не поддерживаются.
+- structs may only be declared at the top level;
+- fields use `type name;`; a field type must be scalar (`int`, `double`, `bool`, or `string`);
+- at least one field is required;
+- field names are unique;
+- nested struct fields are not supported in v0.5.
 
-### Литерал структуры
+### Struct literals
 
 ```csharp
 Point p = Point { x = 3, y = 4 };
 User user = User { name = "Ada", active = true };
 ```
 
-- `new` не нужен;
-- нужно инициализировать все поля ровно один раз;
-- порядок полей произвольный;
-- типы значений проверяются.
+- `new` is not needed;
+- every field must be initialized exactly once;
+- field order is free;
+- value types are checked.
 
 ```csharp
 Point p = Point { x = 3, y = 4 };
 log(p.x, p.y); // 3 4
 ```
 
-### Поля
+### Fields
 
 ```csharp
 Point p = Point { x = 1, y = 2 };
 
-p.x = p.x + 10; // присваивание полю
+p.x = p.x + 10; // field assignment
 log(p.x);       // 11
 
-Point copy = p; // копирование по значению
+Point copy = p; // copied by value
 copy.y = 0;
 log(p.y, copy.y); // 2 0
 ```
 
-- доступ — `точка.поле`;
-- полям можно присваивать;
-- структуры передаются в функции и возвращаются по значению;
-- сравнивать структуры через `==`/`!=` нельзя;
-- печатать структуру в `log` нельзя — печатайте поля.
+- access uses `value.field`;
+- fields can be assigned;
+- structs are passed to functions and returned by value;
+- structs cannot be compared with `==`/`!=`;
+- structs cannot be printed with `log`; print fields instead.
 
-### Структуры в функциях
+### Structs in functions
 
 ```csharp
 struct Point {
@@ -710,9 +722,9 @@ log(lengthSquared(p)); // 25
 log(makePoint(1, 2).x); // 1
 ```
 
-## 14. Ошибки
+## 14. Errors
 
-Ошибки компиляции и типов печатаются с файлом, строкой и колонкой:
+Compile-time and type errors include the file, line, and column:
 
 ```
 examples/errors/missing_return.ce:2:1: error: function 'absolute' must return a value on all paths
@@ -720,17 +732,25 @@ examples/errors/missing_return.ce:2:1: error: function 'absolute' must return a 
     ^
 ```
 
-Все ошибки типов собираются за один прогон; код возврата — `1`.
+All type errors are collected in one run; the exit code is `1`.
 
-Деление на ноль для `int` обнаруживается во время выполнения:
+Integer division by zero is detected at run time:
 
 ```
 runtime error: division by zero: program.ce:5
 ```
 
-Код возврата — `1`. Деление `double` на ноль не проверяется и даёт `inf` или `nan`.
+The exit code is `1`. Double division by zero is not checked and produces `inf` or `nan`.
 
-## 15. Полный пример
+Invalid input and invalid conversions are also runtime errors:
+
+```
+runtime error: invalid int input: '12abc': program.ce:3
+runtime error: invalid int value: '12abc': program.ce:7
+runtime error: unexpected end of input: program.ce:5
+```
+
+## 15. Complete example
 
 ```csharp
 // bank.ce
@@ -758,37 +778,37 @@ if (account.balance >= 250) {
 }
 ```
 
-Сборка и запуск:
+Build and run:
 
 ```sh
-./ceriumc build examples/structs.ce -o structs
-./structs
+./ceriumc build bank.ce -o bank
+./bank
 ```
 
-## 16. Шпаргалка
+## 16. Cheat sheet
 
 ```csharp
-// комментарий
-/* блочный комментарий */
+// comment
+/* block comment */
 
-int x = 10;                  // объявление
-x = x + 1;                   // присваивание
+int x = 10;                  // declaration
+x = x + 1;                   // assignment
 
 double d = 2.5;
 bool flag = true;
 string s = "text";
 
-log("x =", x);               // аргументы через пробел + \n
+log("x =", x);               // arguments separated by a space + \n
 
-string name = input("Name: ");   // строка
+string name = input("Name: ");   // string
 int age = inputInt("Age: ");     // int
 double h = inputDouble();        // double
 bool ok = inputBool();           // true/false
 
-string label = "age: " + toString(age); // число в строку
-int parsed = toInt("42");               // строка в int
+string label = "age: " + toString(age); // number to string
+int parsed = toInt("42");               // string to int
 
-if (x > 5) {                 // условие типа bool
+if (x > 5) {                 // condition must be bool
     log("big");
 } else if (x == 5) {
     log("five");
@@ -809,7 +829,7 @@ loop {
 }
 
 int n = (1 + 2) * 3;
-bool ok = n > 5 && !flag;
+bool ok2 = n > 5 && !flag;
 string t = s + "!";
 
 struct Point {
@@ -830,31 +850,31 @@ func ping() -> void {
 }
 ```
 
-## 17. Ограничения v0.5
+## 17. Limitations in v0.5
 
-Не поддерживаются:
+Not supported:
 
-- массивы, списки, строковые индексы;
-- методы и конструкторы структур;
-- вложенные структуры и структуры как поля;
-- сравнение и печать структур целиком;
-- перегрузка функций;
-- `for` без секций, `do while`, `switch`;
-- приведения типов (`(int)`, `int(...)`);
-- `++`, `--`, `+=`, `-=` и другие составные присваивания;
-- тернарный оператор `? :`;
-- интерполяция строк;
-- модули, импорты, дженерики;
-- сборка мусора: результат конкатенации строк, прочитанные строки ввода и строки из
-  `toString` живут до завершения процесса.
+- arrays, lists, and string indexing;
+- methods and constructors for structs;
+- nested structs and struct-typed fields;
+- comparing or printing whole structs;
+- function overloading;
+- `for` with omitted clauses, `do while`, and `switch`;
+- type casts (`(int)`, `int(...)`); use explicit conversion functions;
+- `++`, `--`, `+=`, `-=`, and other compound assignments;
+- the ternary operator `? :`;
+- string interpolation;
+- modules, imports, and generics;
+- garbage collection: concatenated strings, strings returned by `input()`, and `toString`
+  results live until the process exits.
 
-## 18. CLI кратко
+## 18. CLI at a glance
 
 ```sh
-./ceriumc build file.ce -o program   # собрать бинарник
-./ceriumc check file.ce              # только проверить синтаксис и типы
-./ceriumc emit-c file.ce             # показать сгенерированный C
+./ceriumc build file.ce -o program   # build a binary
+./ceriumc check file.ce              # check syntax and types only
+./ceriumc emit-c file.ce             # print the generated C
 ./ceriumc --version
 ```
 
-Дополнительные флаги `build`: `--emit-c PATH`, `--keep-c`, `--static`, `--cc NAME`.
+Additional `build` flags: `--emit-c PATH`, `--keep-c`, `--static`, `--cc NAME`.

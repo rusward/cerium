@@ -299,7 +299,8 @@ runtime error: invalid int input: '12abc': file.ce:3
 runtime error: unexpected end of input: file.ce:5
 ```
 
-Input buffers are allocated on the heap and are not freed before the process exits.
+Strings returned by `input()` are heap-allocated and are not freed before the process exits;
+buffers used by the typed input functions are freed after parsing.
 
 ### Explicit conversions
 

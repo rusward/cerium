@@ -1,6 +1,6 @@
-привет, нужно написать свой язык программирования cerium со своим компилятором ceriumc
+Hi, I need to build my own programming language Cerium with its own compiler, `ceriumc`.
 
-идея: демо пайтон со строгой типизацией как в низкоуровневых языках но с простым синтаксисом
+Idea: a demo Python with strict typing like low-level languages, but with simple syntax.
 
-
-1) компилятор который бы мог собирать код .ce в бинарник, из функций языка пока пусть будет вывод в консоль log('что выводим')
+1) A compiler that can build `.ce` code into a binary. For now, the only language function is
+console output: `log('what to print')`.

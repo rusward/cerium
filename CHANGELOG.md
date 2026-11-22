@@ -11,6 +11,7 @@ All notable changes to Cerium are documented in this file.
 - source file extension changed from `.hy` to `.ce`;
 - compiler command and Python package renamed from `hydrogenc` to `ceriumc`;
 - C runtime prefix renamed from `hy_` to `ce_`, `HY_FILE` to `CE_FILE`;
+- all user-facing documentation translated to English;
 - GitHub repository moved from `rusward/hydrogen` to `rusward/cerium`.
 
 ## [0.4.0] - 2026-11-22
@@ -43,7 +44,7 @@ All notable changes to Cerium are documented in this file.
 - infinite `loop` with `break` and `continue`;
 - missing-return analysis for non-void functions;
 - tests for functions, structs, loops and new error cases;
-- `docs/syntax.md`: Russian syntax guide for v0.2;
+- `docs/syntax.md`: syntax guide for v0.2;
 - packaging metadata (`pyproject.toml`), CI workflow, MIT license;
 - project logo reference in `logo/`.
 
