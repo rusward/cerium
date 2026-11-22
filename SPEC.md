@@ -1,6 +1,6 @@
 # Hydrogen language specification
 
-Version 0.3 (MVP).
+Version 0.4 (MVP).
 
 ## 1. Overview
 
@@ -110,7 +110,7 @@ struct Point {
 
 - Struct declarations are only allowed at top level.
 - Fields must have scalar types (`int`, `double`, `bool`, `string`); nested struct fields are
-  not supported in v0.3.
+  not supported in v0.4.
 - Field names must be unique within a struct; at least one field is required.
 - Struct types can be used for variables, parameters, and return types.
 - Struct values are passed to functions and returned from them by value.
@@ -251,6 +251,10 @@ Built-in functions are always available and cannot be redefined with `func`.
 | `inputInt()`   | optional `string` prompt | `int`    |
 | `inputDouble()`| optional `string` prompt | `double` |
 | `inputBool()`  | optional `string` prompt | `bool`   |
+| `toString(v)`  | one scalar value         | `string` |
+| `toInt(t)`     | one `string`             | `int`    |
+| `toDouble(t)`  | one `string`             | `double` |
+| `toBool(t)`    | one `string`             | `bool`   |
 
 ### `log`
 
@@ -296,6 +300,34 @@ runtime error: unexpected end of input: file.hy:5
 ```
 
 Input buffers are allocated on the heap and are not freed before the process exits.
+
+### Explicit conversions
+
+There are no implicit conversions and no cast syntax. Use the conversion builtins
+explicitly:
+
+```
+string label = "answer: " + toString(42);
+int port = toInt("8080");
+double ratio = toDouble("0.25");
+bool enabled = toBool("true");
+```
+
+- `toString(value)` accepts one scalar (`int`, `double`, `bool`, `string`) and returns a
+  string. Integers print in decimal, doubles use the same `%g` format as `log`, booleans
+  become `true`/`false`; an input string is returned unchanged. Struct values are not
+  accepted.
+- `toInt`, `toDouble`, `toBool` accept one `string`, trim spaces and tabs, and parse the
+  whole remaining text. The accepted syntax matches the corresponding `input*` functions.
+- Invalid conversion text raises a runtime error and exits with code 1:
+
+```
+runtime error: invalid int value: '12abc': file.hy:3
+runtime error: invalid bool value: 'yes': file.hy:7
+```
+
+- The result of `toString` for numeric values is heap-allocated and lives until the
+  process exits.
 
 ## 8. Operators
 
@@ -377,7 +409,7 @@ for (int i = 1; i <= 3; i = i + 1) {
 }
 ```
 
-## 12. Out of scope for v0.3
+## 12. Out of scope for v0.4
 
 Arrays, methods and constructors, nested structs, struct equality, `for` without clauses,
 `do while`, `switch`, casts, `++`/`+=`, ternary operator, string interpolation, generics,

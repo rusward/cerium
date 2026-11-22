@@ -34,13 +34,29 @@ static bool hy_str_eq(const char *a, const char *b) {
     return strcmp(a, b) == 0;
 }
 
-static void hy_input_fail(const char *kind, const char *text, int line) {
+static void hy_parse_fail(
+    const char *kind,
+    const char *label,
+    const char *text,
+    int line
+) {
     fprintf(
         stderr,
-        "runtime error: invalid %s input: '%s': %s:%d\n",
-        kind, text, HY_FILE, line
+        "runtime error: invalid %s %s: '%s': %s:%d\n",
+        kind, label, text, HY_FILE, line
     );
     exit(1);
+}
+
+static char *hy_copy_text(const char *text) {
+    size_t length = strlen(text);
+    char *copy = (char *)malloc(length + 1);
+    if (copy == NULL) {
+        fputs("runtime error: out of memory\n", stderr);
+        exit(1);
+    }
+    memcpy(copy, text, length + 1);
+    return copy;
 }
 
 static void hy_prompt(const char *prompt) {
@@ -107,46 +123,38 @@ static char *hy_read_line(int line) {
     return buffer;
 }
 
-static const char *hy_input_string(const char *prompt, int line) {
-    hy_prompt(prompt);
-    return hy_read_line(line);
-}
-
-static int64_t hy_input_int(const char *prompt, int line) {
-    hy_prompt(prompt);
-    char *buffer = hy_read_line(line);
+static int64_t hy_parse_int(const char *source, const char *label, int line) {
+    char *buffer = hy_copy_text(source);
     char *text = hy_trim(buffer);
     char *end = NULL;
 
     errno = 0;
     long long value = strtoll(text, &end, 10);
     if (end == text || *end != '\0' || errno == ERANGE) {
-        hy_input_fail("int", text, line);
+        hy_parse_fail("int", label, text, line);
     }
 
     free(buffer);
     return (int64_t)value;
 }
 
-static double hy_input_double(const char *prompt, int line) {
-    hy_prompt(prompt);
-    char *buffer = hy_read_line(line);
+static double hy_parse_double(const char *source, const char *label, int line) {
+    char *buffer = hy_copy_text(source);
     char *text = hy_trim(buffer);
     char *end = NULL;
 
     errno = 0;
     double value = strtod(text, &end);
     if (end == text || *end != '\0' || errno == ERANGE) {
-        hy_input_fail("double", text, line);
+        hy_parse_fail("double", label, text, line);
     }
 
     free(buffer);
     return value;
 }
 
-static bool hy_input_bool(const char *prompt, int line) {
-    hy_prompt(prompt);
-    char *buffer = hy_read_line(line);
+static bool hy_parse_bool(const char *source, const char *label, int line) {
+    char *buffer = hy_copy_text(source);
     char *text = hy_trim(buffer);
 
     bool result;
@@ -155,12 +163,69 @@ static bool hy_input_bool(const char *prompt, int line) {
     } else if (strcmp(text, "false") == 0) {
         result = false;
     } else {
-        hy_input_fail("bool", text, line);
+        hy_parse_fail("bool", label, text, line);
         result = false;
     }
 
     free(buffer);
     return result;
+}
+
+static const char *hy_input_string(const char *prompt, int line) {
+    hy_prompt(prompt);
+    return hy_read_line(line);
+}
+
+static int64_t hy_input_int(const char *prompt, int line) {
+    hy_prompt(prompt);
+    char *buffer = hy_read_line(line);
+    int64_t value = hy_parse_int(buffer, "input", line);
+    free(buffer);
+    return value;
+}
+
+static double hy_input_double(const char *prompt, int line) {
+    hy_prompt(prompt);
+    char *buffer = hy_read_line(line);
+    double value = hy_parse_double(buffer, "input", line);
+    free(buffer);
+    return value;
+}
+
+static bool hy_input_bool(const char *prompt, int line) {
+    hy_prompt(prompt);
+    char *buffer = hy_read_line(line);
+    bool value = hy_parse_bool(buffer, "input", line);
+    free(buffer);
+    return value;
+}
+
+static int64_t hy_string_to_int(const char *text, int line) {
+    return hy_parse_int(text, "value", line);
+}
+
+static double hy_string_to_double(const char *text, int line) {
+    return hy_parse_double(text, "value", line);
+}
+
+static bool hy_string_to_bool(const char *text, int line) {
+    return hy_parse_bool(text, "value", line);
+}
+
+static const char *hy_int_to_string(int64_t value) {
+    char buffer[32];
+    snprintf(buffer, sizeof(buffer), "%" PRId64, value);
+    return hy_str_concat(buffer, "");
+}
+
+static const char *hy_double_to_string(double value) {
+    char buffer[64];
+    snprintf(buffer, sizeof(buffer), "%g", value);
+    return hy_str_concat(buffer, "");
+}
+
+static const char *hy_bool_to_string(bool value) {
+    return value ? "true" : "false";
 }
 
 /* Two's-complement wraparound, matching C# unchecked arithmetic. */

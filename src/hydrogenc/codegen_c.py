@@ -25,6 +25,12 @@ INPUT_HELPERS = {
     "inputBool": "hy_input_bool",
 }
 
+CONVERSION_HELPERS = {
+    "toInt": "hy_string_to_int",
+    "toDouble": "hy_string_to_double",
+    "toBool": "hy_string_to_bool",
+}
+
 
 def escape_c_string(value: str) -> str:
     chunks = ['"']
@@ -300,6 +306,22 @@ class CCodegen:
                 )
                 return (
                     f"{INPUT_HELPERS[expr.name]}({prompt}, {expr.line})"
+                )
+            if expr.name == "toString":
+                argument = expr.args[0]
+                argument_type = self.types[id(argument)]
+                value = self.expression(argument)
+                if argument_type == "int":
+                    return f"hy_int_to_string({value})"
+                if argument_type == "double":
+                    return f"hy_double_to_string({value})"
+                if argument_type == "bool":
+                    return f"hy_bool_to_string({value})"
+                return value
+            if expr.name in CONVERSION_HELPERS:
+                return (
+                    f"{CONVERSION_HELPERS[expr.name]}("
+                    f"{self.expression(expr.args[0])}, {expr.line})"
                 )
             args = ", ".join(self.expression(argument) for argument in expr.args)
             return f"hy_fn_{expr.name}({args})"

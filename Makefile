@@ -23,6 +23,7 @@ examples: build
 	./hydrogenc build examples/functions.hy -o build/functions
 	./hydrogenc build examples/structs.hy -o build/structs
 	./hydrogenc build examples/input.hy -o build/input
+	./hydrogenc build examples/conversions.hy -o build/conversions
 	./hydrogenc build examples/fizzbuzz.hy -o build/fizzbuzz
 
 build:

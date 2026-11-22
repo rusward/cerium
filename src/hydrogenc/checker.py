@@ -15,12 +15,28 @@ ERROR = "<error>"
 SCALARS = {INT, DOUBLE, BOOL, STRING}
 NUMERIC = {INT, DOUBLE}
 
-BUILTIN_NAMES = {"log", "input", "inputInt", "inputDouble", "inputBool"}
+BUILTIN_NAMES = {
+    "log",
+    "input",
+    "inputInt",
+    "inputDouble",
+    "inputBool",
+    "toString",
+    "toInt",
+    "toDouble",
+    "toBool",
+}
 INPUT_RETURN_TYPES = {
     "input": STRING,
     "inputInt": INT,
     "inputDouble": DOUBLE,
     "inputBool": BOOL,
+}
+CONVERSION_RETURN_TYPES = {
+    "toString": STRING,
+    "toInt": INT,
+    "toDouble": DOUBLE,
+    "toBool": BOOL,
 }
 
 INT64_MAX = 2**63 - 1
@@ -529,6 +545,9 @@ class TypeChecker:
         if call.name in INPUT_RETURN_TYPES:
             return self.check_input_call(call)
 
+        if call.name in CONVERSION_RETURN_TYPES:
+            return self.check_conversion_call(call)
+
         signature = self.functions.get(call.name)
         if signature is None:
             for argument in call.args:
@@ -590,6 +609,37 @@ class TypeChecker:
                 )
 
         return self.set_type(call, INPUT_RETURN_TYPES[call.name])
+
+    def check_conversion_call(self, call: nodes.Call) -> str:
+        for argument in call.args:
+            self.check_expression(argument)
+
+        if len(call.args) != 1:
+            self.add_error(
+                call,
+                f"function '{call.name}' expects 1 argument, "
+                f"got {len(call.args)}",
+            )
+            return self.set_type(call, CONVERSION_RETURN_TYPES[call.name])
+
+        argument_type = self.types[id(call.args[0])]
+        if argument_type == ERROR:
+            return self.set_type(call, CONVERSION_RETURN_TYPES[call.name])
+
+        if call.name == "toString":
+            if argument_type not in SCALARS:
+                self.add_error(
+                    call.args[0],
+                    f"cannot convert a value of type '{argument_type}' to string",
+                )
+        elif argument_type != STRING:
+            self.add_error(
+                call.args[0],
+                f"argument 1 of function '{call.name}' "
+                f"must have type 'string', got '{argument_type}'",
+            )
+
+        return self.set_type(call, CONVERSION_RETURN_TYPES[call.name])
 
     def check_unary(self, expression: nodes.Unary) -> str:
         operand_type = self.check_expression(expression.operand)

@@ -410,6 +410,73 @@ class EndToEndTests(unittest.TestCase):
         self.assertEqual(run.returncode, 1)
         self.assertIn("runtime error: unexpected end of input", run.stderr)
 
+    def test_to_string_for_concatenation(self):
+        binary, _, _ = self.build(
+            """
+            struct User { int avatar; }
+            User user = User { avatar = 87123712 };
+            log("AVATAR: (" + toString(user.avatar) + ")");
+            """
+        )
+        result = self.run_binary(binary)
+        self.assertEqual(result.stdout, "AVATAR: (87123712)\n")
+
+    def test_to_string_formats_all_scalars(self):
+        binary, _, _ = self.build(
+            """
+            log(toString(42));
+            log(toString(3.14));
+            log(toString(true));
+            log(toString("x"));
+            """
+        )
+        result = self.run_binary(binary)
+        self.assertEqual(result.stdout, "42\n3.14\ntrue\nx\n")
+
+    def test_parse_conversions(self):
+        binary, _, _ = self.build(
+            """
+            log(toInt(" 41 ") + 1);
+            log(toDouble("1.5e2"));
+            log(toBool("true"), toBool("false"));
+            """
+        )
+        result = self.run_binary(binary)
+        self.assertEqual(result.stdout, "42\n150\ntrue false\n")
+
+    def test_invalid_conversion_is_a_runtime_error(self):
+        directory = self.make_project()
+        source_path = os.path.join(directory, "convert_bad.hy")
+        support.write(source_path, 'log(toInt("12abc"));\n')
+        binary = os.path.join(directory, "prog")
+        result = support.cli("build", source_path, "-o", binary)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+        run = self.run_binary(binary)
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("runtime error: invalid int value: '12abc'", run.stderr)
+        self.assertIn("convert_bad.hy:1", run.stderr)
+
+    def test_invalid_bool_conversion_is_a_runtime_error(self):
+        binary, _, _ = self.build('log(toBool("yes"));')
+        run = self.run_binary(binary)
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("runtime error: invalid bool value: 'yes'", run.stderr)
+
+    def test_conversions_example(self):
+        binary, _, _ = self.build(
+            support.read(os.path.join(support.EXAMPLES, "conversions.hy"))
+        )
+        result = self.run_binary(binary)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "USERNAME: (TeamLED)\n"
+            "AVATAR: (87123712)\n"
+            "port = 8080\n"
+            "ratio = 0.25 enabled = true\n",
+        )
+
 
 class CliTests(unittest.TestCase):
     def test_version(self):

@@ -2,6 +2,15 @@
 
 All notable changes to Hydrogen are documented in this file.
 
+## [0.4.0] - 2026-11-22
+
+### Added
+
+- explicit conversions: `toString(value)`, `toInt(text)`, `toDouble(text)`, `toBool(text)`;
+- numeric-to-string formatting matching `log` (`%g` for doubles);
+- runtime errors for invalid conversion input;
+- `examples/conversions.hy` and tests for conversions.
+
 ## [0.3.0] - 2026-11-22
 
 ### Added

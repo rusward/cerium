@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hydrogenc"
-version = "0.3.0"
+version = "0.4.0"
 description = "Hydrogen: a small statically typed language with a C99 backend"
 readme = "README.md"
 requires-python = ">=3.10"

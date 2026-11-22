@@ -331,6 +331,61 @@ class CheckerTests(unittest.TestCase):
                 (name, messages),
             )
 
+    def test_to_string_accepts_scalars(self):
+        check(
+            "string a = toString(42);"
+            "string b = toString(2.5);"
+            "string c = toString(true);"
+            'string d = toString("text");'
+            "log(a, b, c, d);"
+        )
+
+    def test_parse_conversions_return_types(self):
+        check(
+            'int n = toInt("42");'
+            'double d = toDouble("1.5");'
+            'bool b = toBool("true");'
+            "log(n + 1, d * 2.0, !b);"
+        )
+
+    def test_to_string_rejects_structs(self):
+        messages = error_messages(
+            "struct Point { int x; } "
+            "Point p = Point { x = 1 }; "
+            "log(toString(p));"
+        )
+        self.assertTrue(
+            any("cannot convert a value of type 'Point' to string" in m for m in messages),
+            messages,
+        )
+
+    def test_parse_conversions_require_string(self):
+        for name in ("toInt", "toDouble", "toBool"):
+            messages = error_messages(f"{name}(1);")
+            self.assertTrue(
+                any(
+                    f"argument 1 of function '{name}' must have type 'string'" in m
+                    for m in messages
+                ),
+                (name, messages),
+            )
+
+    def test_conversions_require_one_argument(self):
+        for name in ("toString", "toInt", "toDouble", "toBool"):
+            messages = error_messages(f"{name}();")
+            self.assertTrue(
+                any(f"function '{name}' expects 1 argument, got 0" in m for m in messages),
+                (name, messages),
+            )
+
+    def test_conversion_builtins_cannot_be_redefined(self):
+        for name in ("toString", "toInt", "toDouble", "toBool"):
+            messages = error_messages(f"func {name}() -> void {{ }}")
+            self.assertTrue(
+                any(f"cannot declare function '{name}'" in m for m in messages),
+                (name, messages),
+            )
+
     def test_function_cannot_see_top_level_variables(self):
         messages = error_messages(
             "int x = 1; func f() -> int { return x; }"

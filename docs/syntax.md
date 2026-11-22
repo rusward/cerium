@@ -1,6 +1,6 @@
 # Синтаксис Hydrogen
 
-Документация по языку Hydrogen версии 0.3. Формальная грамматика в EBNF — в
+Документация по языку Hydrogen версии 0.4. Формальная грамматика в EBNF — в
 [SPEC.md](../SPEC.md).
 
 ## 0. Чем Hydrogen отличается
@@ -363,6 +363,62 @@ string text = input();     // ввод: hello world
 log("[" + text + "]");     // [hello world]
 ```
 
+## 8.2. Преобразования типов
+
+Неявных преобразований нет, поэтому для смены типа используются явные функции:
+
+| Функция             | Аргумент       | Результат |
+|---------------------|----------------|-----------|
+| `toString(value)`   | `int`, `double`, `bool` или `string` | `string` |
+| `toInt(text)`       | `string`       | `int`     |
+| `toDouble(text)`    | `string`       | `double`  |
+| `toBool(text)`      | `string`       | `bool`    |
+
+```csharp
+string label = "answer: " + toString(42);
+int port = toInt(" 8080 ");
+double ratio = toDouble("2.5e-1");
+bool enabled = toBool("true");
+
+log(label);   // answer: 42
+log(port);    // 8080
+log(ratio);   // 0.25
+log(enabled); // true
+```
+
+Правила:
+
+- `toString` принимает один скаляр. `int` печатается десятичным числом, `double` — в
+  формате `%g` (как в `log`), `bool` — как `true`/`false`, строка возвращается как есть;
+- структуру в `toString` передать нельзя — конвертируйте отдельные поля;
+- `toInt`, `toDouble`, `toBool` принимают только `string`, обрезают пробелы и табуляцию
+  по краям и разбирают оставшийся текст целиком;
+- форматы те же, что у `inputInt`, `inputDouble`, `inputBool`;
+- при неверном тексте — ошибка рантайма и код 1:
+
+```
+runtime error: invalid int value: '12abc': program.hy:3
+runtime error: invalid bool value: 'yes': program.hy:7
+```
+
+Типичное применение — склеить число или `bool` со строкой:
+
+```csharp
+struct User {
+    string name;
+    int avatar;
+}
+
+User user = User { name = "TeamLED", avatar = 87123712 };
+log("USERNAME: (" + user.name + ")");
+log("AVATAR: (" + toString(user.avatar) + ")");
+```
+
+```
+USERNAME: (TeamLED)
+AVATAR: (87123712)
+```
+
 ## 9. Условия
 
 ```csharp
@@ -595,7 +651,7 @@ struct User {
   (`int`, `double`, `bool`, `string`);
 - хотя бы одно поле;
 - имена полей уникальны;
-- вложенные структуры в v0.3 не поддерживаются.
+- вложенные структуры в v0.4 не поддерживаются.
 
 ### Литерал структуры
 
@@ -729,6 +785,9 @@ int age = inputInt("Age: ");     // int
 double h = inputDouble();        // double
 bool ok = inputBool();           // true/false
 
+string label = "age: " + toString(age); // число в строку
+int parsed = toInt("42");               // строка в int
+
 if (x > 5) {                 // условие типа bool
     log("big");
 } else if (x == 5) {
@@ -771,7 +830,7 @@ func ping() -> void {
 }
 ```
 
-## 17. Ограничения v0.3
+## 17. Ограничения v0.4
 
 Не поддерживаются:
 
@@ -786,8 +845,8 @@ func ping() -> void {
 - тернарный оператор `? :`;
 - интерполяция строк;
 - модули, импорты, дженерики;
-- сборка мусора: результат конкатенации строк и прочитанные строки ввода живут до
-  завершения процесса.
+- сборка мусора: результат конкатенации строк, прочитанные строки ввода и строки из
+  `toString` живут до завершения процесса.
 
 ## 18. CLI кратко
 
