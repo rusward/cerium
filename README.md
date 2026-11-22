@@ -9,14 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/rusward/cerium/actions/workflows/ci.yml">
-    <img src="https://github.com/rusward/cerium/actions/workflows/ci.yml/badge.svg" alt="CI">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="License: MIT">
-  </a>
-  <img src="https://img.shields.io/badge/python-3.10%2B-blue.svg" alt="Python 3.10+">
-  <img src="https://img.shields.io/badge/backend-C99%20%2B%20gcc-lightgrey.svg" alt="C99 backend">
+  <sub>CI passing · MIT · Python 3.10+ · C99 + gcc</sub>
 </p>
 
 Cerium (`ceriumc`) compiles `.ce` to C99 and builds a native binary with `gcc`.
