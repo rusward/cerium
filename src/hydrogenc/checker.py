@@ -15,6 +15,14 @@ ERROR = "<error>"
 SCALARS = {INT, DOUBLE, BOOL, STRING}
 NUMERIC = {INT, DOUBLE}
 
+BUILTIN_NAMES = {"log", "input", "inputInt", "inputDouble", "inputBool"}
+INPUT_RETURN_TYPES = {
+    "input": STRING,
+    "inputInt": INT,
+    "inputDouble": DOUBLE,
+    "inputBool": BOOL,
+}
+
 INT64_MAX = 2**63 - 1
 
 
@@ -93,9 +101,10 @@ class TypeChecker:
             if not isinstance(statement, nodes.FuncDecl):
                 continue
 
-            if statement.name == "log":
+            if statement.name in BUILTIN_NAMES:
                 self.add_error(
-                    statement, "cannot declare function 'log': it is built in"
+                    statement,
+                    f"cannot declare function '{statement.name}': it is built in",
                 )
                 continue
 
@@ -517,6 +526,9 @@ class TypeChecker:
                     )
             return self.set_type(call, VOID)
 
+        if call.name in INPUT_RETURN_TYPES:
+            return self.check_input_call(call)
+
         signature = self.functions.get(call.name)
         if signature is None:
             for argument in call.args:
@@ -556,6 +568,28 @@ class TypeChecker:
                 )
 
         return self.set_type(call, signature.return_type)
+
+    def check_input_call(self, call: nodes.Call) -> str:
+        for argument in call.args:
+            self.check_expression(argument)
+
+        if len(call.args) > 1:
+            self.add_error(
+                call,
+                f"function '{call.name}' takes at most 1 argument, "
+                f"got {len(call.args)}",
+            )
+
+        if call.args:
+            prompt_type = self.types[id(call.args[0])]
+            if prompt_type not in (ERROR, STRING):
+                self.add_error(
+                    call.args[0],
+                    f"argument 1 of function '{call.name}' "
+                    f"must have type 'string', got '{prompt_type}'",
+                )
+
+        return self.set_type(call, INPUT_RETURN_TYPES[call.name])
 
     def check_unary(self, expression: nodes.Unary) -> str:
         operand_type = self.check_expression(expression.operand)

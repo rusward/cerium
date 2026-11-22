@@ -25,8 +25,10 @@ class EndToEndTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         return binary, directory, source_path
 
-    def run_binary(self, binary):
-        return subprocess.run([binary], capture_output=True, text=True)
+    def run_binary(self, binary, stdin=""):
+        return subprocess.run(
+            [binary], input=stdin, capture_output=True, text=True
+        )
 
     def test_hello_example(self):
         binary, _, _ = self.build(support.read(os.path.join(support.EXAMPLES, "hello.hy")))
@@ -320,6 +322,93 @@ class EndToEndTests(unittest.TestCase):
         )
         result = self.run_binary(binary)
         self.assertEqual(result.stdout, "1 2\n")
+
+    def test_input_builtins(self):
+        binary, _, _ = self.build(
+            'string name = input("name? ");'
+            'int age = inputInt("age? ");'
+            'double height = inputDouble("height? ");'
+            'bool ok = inputBool("ok? ");'
+            'log("hello,", name);'
+            "log(age, height, ok);"
+        )
+        result = self.run_binary(
+            binary, stdin="Ada\n42\n1.75\ntrue\n"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "name? age? height? ok? hello, Ada\n"
+            "42 1.75 true\n",
+        )
+
+    def test_input_example(self):
+        binary, _, _ = self.build(
+            support.read(os.path.join(support.EXAMPLES, "input.hy"))
+        )
+        result = self.run_binary(
+            binary, stdin="Ada\n36\n1.8\ntrue\n"
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            result.stdout,
+            "Name: Age: Height (m): Developer? (true/false): "
+            "hello, Ada\n"
+            "age = 36 height = 1.8 developer = true\n",
+        )
+
+    def test_input_preserves_spaces_and_strips_crlf(self):
+        binary, _, _ = self.build(
+            'string text = input(); log("[" + text + "]");'
+        )
+        result = self.run_binary(binary, stdin="  hello world  \r\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "[  hello world  ]\n")
+
+    def test_input_empty_line_is_a_valid_string(self):
+        binary, _, _ = self.build(
+            'string text = input(); log("empty:", text == "");'
+        )
+        result = self.run_binary(binary, stdin="\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "empty: true\n")
+
+    def test_input_int_accepts_surrounding_whitespace(self):
+        binary, _, _ = self.build("int n = inputInt(); log(n + 1);")
+        result = self.run_binary(binary, stdin=" 41 \n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "42\n")
+
+    def test_input_double_accepts_exponent(self):
+        binary, _, _ = self.build("double d = inputDouble(); log(d);")
+        result = self.run_binary(binary, stdin="1.5e2\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout, "150\n")
+
+    def test_input_invalid_int_is_a_runtime_error(self):
+        directory = self.make_project()
+        source_path = os.path.join(directory, "input_bad.hy")
+        support.write(source_path, "int n = inputInt();\nlog(n);\n")
+        binary = os.path.join(directory, "prog")
+        result = support.cli("build", source_path, "-o", binary)
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+        run = self.run_binary(binary, stdin="12abc\n")
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("runtime error: invalid int input: '12abc'", run.stderr)
+        self.assertIn("input_bad.hy:1", run.stderr)
+
+    def test_input_invalid_bool_is_a_runtime_error(self):
+        binary, _, _ = self.build("bool b = inputBool(); log(b);")
+        run = self.run_binary(binary, stdin="yes\n")
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("runtime error: invalid bool input: 'yes'", run.stderr)
+
+    def test_input_unexpected_eof_is_a_runtime_error(self):
+        binary, _, _ = self.build("string s = input(); log(s);")
+        run = self.run_binary(binary, stdin="")
+        self.assertEqual(run.returncode, 1)
+        self.assertIn("runtime error: unexpected end of input", run.stderr)
 
 
 class CliTests(unittest.TestCase):

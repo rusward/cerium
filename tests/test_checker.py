@@ -281,6 +281,56 @@ class CheckerTests(unittest.TestCase):
             messages,
         )
 
+    def test_input_builtins(self):
+        check(
+            'string name = input("name: ");'
+            "int age = inputInt();"
+            'double height = inputDouble("height: ");'
+            "bool ok = inputBool();"
+            "log(name, age, height, ok);"
+        )
+
+    def test_input_result_types(self):
+        check(
+            "int n = inputInt();"
+            "double d = inputDouble();"
+            'string s = input("s: ");'
+            "bool b = inputBool();"
+            "log(n + 1, d * 2.0, s + \"!\", !b);"
+        )
+
+    def test_input_prompt_must_be_string(self):
+        messages = error_messages("input(1);")
+        self.assertTrue(
+            any(
+                "argument 1 of function 'input' must have type 'string'" in m
+                for m in messages
+            ),
+            messages,
+        )
+
+    def test_input_takes_at_most_one_argument(self):
+        messages = error_messages('input("a", "b");')
+        self.assertTrue(
+            any("takes at most 1 argument, got 2" in m for m in messages),
+            messages,
+        )
+
+    def test_input_int_cannot_initialize_string(self):
+        messages = error_messages("string s = inputInt();")
+        self.assertTrue(
+            any("cannot initialize variable 's'" in m for m in messages),
+            messages,
+        )
+
+    def test_input_builtins_cannot_be_redefined(self):
+        for name in ("input", "inputInt", "inputDouble", "inputBool"):
+            messages = error_messages(f"func {name}() -> void {{ }}")
+            self.assertTrue(
+                any(f"cannot declare function '{name}'" in m for m in messages),
+                (name, messages),
+            )
+
     def test_function_cannot_see_top_level_variables(self):
         messages = error_messages(
             "int x = 1; func f() -> int { return x; }"

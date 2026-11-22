@@ -1,6 +1,6 @@
 # Hydrogen language specification
 
-Version 0.2 (MVP).
+Version 0.3 (MVP).
 
 ## 1. Overview
 
@@ -110,7 +110,7 @@ struct Point {
 
 - Struct declarations are only allowed at top level.
 - Fields must have scalar types (`int`, `double`, `bool`, `string`); nested struct fields are
-  not supported in v0.2.
+  not supported in v0.3.
 - Field names must be unique within a struct; at least one field is required.
 - Struct types can be used for variables, parameters, and return types.
 - Struct values are passed to functions and returned from them by value.
@@ -240,7 +240,19 @@ Only valid inside `while`, `for`, or `loop`. `break` outside a loop is an error,
 
 Only function calls may be used as standalone statements; `1 + 2;` is an error.
 
-## 7. Built-in `log`
+## 7. Built-in functions
+
+Built-in functions are always available and cannot be redefined with `func`.
+
+| Builtin        | Arguments                | Returns  |
+|----------------|--------------------------|----------|
+| `log(...)`     | any number of scalars    | `void`   |
+| `input(...)`   | optional `string` prompt | `string` |
+| `inputInt()`   | optional `string` prompt | `int`    |
+| `inputDouble()`| optional `string` prompt | `double` |
+| `inputBool()`  | optional `string` prompt | `bool`   |
+
+### `log`
 
 ```
 log(expr, ...);
@@ -253,6 +265,37 @@ log(expr, ...);
 - `log()` prints an empty line.
 - `log` returns `void`; its result cannot be used in an expression.
 - Struct values cannot be passed directly to `log`.
+
+### Console input
+
+```
+string name = input("Name: ");
+int age = inputInt("Age: ");
+double height = inputDouble();
+bool ok = inputBool("Continue? (true/false): ");
+```
+
+All input functions accept zero or one argument, the prompt. The prompt must be a `string`
+expression; it is written to stdout and flushed immediately, without an added newline.
+
+Each call reads exactly one line from stdin:
+
+- the trailing `\n` is removed; a trailing `\r` is removed as well (CRLF input);
+- for `input()` the rest of the line is preserved, including leading and trailing spaces;
+- an empty line is a valid `string` (empty string);
+- end of input (EOF) before any character is a runtime error, even for `input()`;
+- typed functions trim spaces and tabs around the input, then parse it entirely:
+  - `inputInt`: optional sign and decimal digits, must fit in 64 bits;
+  - `inputDouble`: decimal form accepted by C `strtod`, including fractions and exponents;
+  - `inputBool`: exactly `true` or `false`.
+- if the text does not parse, a runtime error is reported and the process exits with code 1:
+
+```
+runtime error: invalid int input: '12abc': file.hy:3
+runtime error: unexpected end of input: file.hy:5
+```
+
+Input buffers are allocated on the heap and are not freed before the process exits.
 
 ## 8. Operators
 
@@ -334,7 +377,7 @@ for (int i = 1; i <= 3; i = i + 1) {
 }
 ```
 
-## 12. Out of scope for v0.2
+## 12. Out of scope for v0.3
 
 Arrays, methods and constructors, nested structs, struct equality, `for` without clauses,
 `do while`, `switch`, casts, `++`/`+=`, ternary operator, string interpolation, generics,

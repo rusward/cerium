@@ -18,6 +18,13 @@ PRINT_HELPERS = {
     "string": "hy_print_string",
 }
 
+INPUT_HELPERS = {
+    "input": "hy_input_string",
+    "inputInt": "hy_input_int",
+    "inputDouble": "hy_input_double",
+    "inputBool": "hy_input_bool",
+}
+
 
 def escape_c_string(value: str) -> str:
     chunks = ['"']
@@ -69,6 +76,7 @@ class CCodegen:
         self.lines.append("#include <stdio.h>")
         self.lines.append("#include <stdlib.h>")
         self.lines.append("#include <string.h>")
+        self.lines.append("#include <errno.h>")
         self.lines.append("")
         self.lines.append(f"#define HY_FILE {escape_c_string(self.filename)}")
         self.lines.append(RUNTIME_SOURCE)
@@ -286,6 +294,13 @@ class CCodegen:
             return self.struct_literal(expr)
 
         if isinstance(expr, nodes.Call):
+            if expr.name in INPUT_HELPERS:
+                prompt = (
+                    self.expression(expr.args[0]) if expr.args else "NULL"
+                )
+                return (
+                    f"{INPUT_HELPERS[expr.name]}({prompt}, {expr.line})"
+                )
             args = ", ".join(self.expression(argument) for argument in expr.args)
             return f"hy_fn_{expr.name}({args})"
 

@@ -2,6 +2,15 @@
 
 All notable changes to Hydrogen are documented in this file.
 
+## [0.3.0] - 2026-11-22
+
+### Added
+
+- console input builtins: `input()`, `inputInt()`, `inputDouble()`, `inputBool()`;
+- optional string prompt argument that is printed and flushed before reading;
+- typed parsing with runtime errors for invalid input and unexpected EOF;
+- `examples/input.hy` and end-to-end tests that feed stdin to compiled programs.
+
 ## [0.2.0] - 2026-11-22
 
 ### Added
