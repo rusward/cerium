@@ -1,9 +1,9 @@
-"""Static type checking for Hydrogen."""
+"""Static type checking for Cerium."""
 
 from dataclasses import dataclass
 
 from . import nodes
-from .errors import Diagnostic, HydrogenErrors
+from .errors import Diagnostic, CeriumErrors
 
 INT = "int"
 DOUBLE = "double"
@@ -75,7 +75,7 @@ class TypeChecker:
                 self.check_function(statement)
 
         if self.errors:
-            raise HydrogenErrors(self.errors)
+            raise CeriumErrors(self.errors)
         return self.types
 
     # -- declarations ------------------------------------------------------

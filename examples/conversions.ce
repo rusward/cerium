@@ -1,4 +1,4 @@
-// conversions.hy - explicit conversions between scalar types.
+// conversions.ce - explicit conversions between scalar types.
 struct User {
     string name;
     int avatar;

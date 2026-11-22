@@ -1,9 +1,9 @@
 #!/bin/sh
-# Launcher for the Hydrogen compiler.
+# Launcher for the Cerium compiler.
 set -eu
 
 DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 PYTHONPATH="$DIR/src${PYTHONPATH:+:$PYTHONPATH}"
 export PYTHONPATH
 
-exec "${PYTHON:-python3}" -m hydrogenc "$@"
+exec "${PYTHON:-python3}" -m ceriumc "$@"

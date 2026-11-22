@@ -1,4 +1,4 @@
-// types.hy - every scalar type and string concatenation.
+// types.ce - every scalar type and string concatenation.
 int count = 7;
 double ratio = 0.5;
 bool ready = false;

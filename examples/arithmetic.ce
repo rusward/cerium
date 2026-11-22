@@ -1,4 +1,4 @@
-// arithmetic.hy - integer and floating point operators.
+// arithmetic.ce - integer and floating point operators.
 int a = 17;
 int b = 5;
 

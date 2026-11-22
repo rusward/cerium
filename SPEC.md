@@ -1,11 +1,11 @@
-# Hydrogen language specification
+# Cerium language specification
 
-Version 0.4 (MVP).
+Version 0.5 (MVP).
 
 ## 1. Overview
 
-Hydrogen is a small statically typed language. Programs are stored in `.hy` files and compiled
-by `hydrogenc` into native executables. The compiler parses the source, verifies types, emits
+Cerium is a small statically typed language. Programs are stored in `.ce` files and compiled
+by `ceriumc` into native executables. The compiler parses the source, verifies types, emits
 C99, and invokes a C compiler.
 
 The syntax is C#-like but reduced, with a few of its own touches:
@@ -110,7 +110,7 @@ struct Point {
 
 - Struct declarations are only allowed at top level.
 - Fields must have scalar types (`int`, `double`, `bool`, `string`); nested struct fields are
-  not supported in v0.4.
+  not supported in v0.5.
 - Field names must be unique within a struct; at least one field is required.
 - Struct types can be used for variables, parameters, and return types.
 - Struct values are passed to functions and returned from them by value.
@@ -295,8 +295,8 @@ Each call reads exactly one line from stdin:
 - if the text does not parse, a runtime error is reported and the process exits with code 1:
 
 ```
-runtime error: invalid int input: '12abc': file.hy:3
-runtime error: unexpected end of input: file.hy:5
+runtime error: invalid int input: '12abc': file.ce:3
+runtime error: unexpected end of input: file.ce:5
 ```
 
 Input buffers are allocated on the heap and are not freed before the process exits.
@@ -322,8 +322,8 @@ bool enabled = toBool("true");
 - Invalid conversion text raises a runtime error and exits with code 1:
 
 ```
-runtime error: invalid int value: '12abc': file.hy:3
-runtime error: invalid bool value: 'yes': file.hy:7
+runtime error: invalid int value: '12abc': file.ce:3
+runtime error: invalid bool value: 'yes': file.ce:7
 ```
 
 - The result of `toString` for numeric values is heap-allocated and lives until the
@@ -345,7 +345,7 @@ runtime error: invalid bool value: 'yes': file.hy:7
 
 - `int` division and `%` truncate toward zero.
 - Integer division/modulo by zero raises a runtime error and exits with code 1:
-  `runtime error: division by zero: file.hy:LINE`.
+  `runtime error: division by zero: file.ce:LINE`.
 - Double division by zero follows IEEE-754 (`inf` / `nan`, printed by `%g`).
 - `int` arithmetic wraps on overflow; `INT64_MIN / -1` yields `INT64_MIN` and
   `INT64_MIN % -1` yields `0`.
@@ -357,7 +357,7 @@ runtime error: invalid bool value: 'yes': file.hy:7
 Compile errors use the form:
 
 ```
-file.hy:3:5: error: cannot assign a value of type 'string' to variable 'n' of type 'int'
+file.ce:3:5: error: cannot assign a value of type 'string' to variable 'n' of type 'int'
     n = "text";
         ^
 ```
@@ -365,15 +365,15 @@ file.hy:3:5: error: cannot assign a value of type 'string' to variable 'n' of ty
 All type errors in a program are reported before exiting. Exit code is `1`.
 
 Generated C contains `#line` directives, so C compiler diagnostics also refer to the
-original `.hy` file.
+original `.ce` file.
 
 ## 10. Compiler CLI
 
 ```
-hydrogenc build <file.hy> [-o out] [--emit-c PATH] [--keep-c] [--static] [--cc NAME]
-hydrogenc check <file.hy>
-hydrogenc emit-c <file.hy> [-o out.c]
-hydrogenc --version
+ceriumc build <file.ce> [-o out] [--emit-c PATH] [--keep-c] [--static] [--cc NAME]
+ceriumc check <file.ce>
+ceriumc emit-c <file.ce> [-o out.c]
+ceriumc --version
 ```
 
 - `build` writes an executable named after the source file by default.
@@ -409,7 +409,7 @@ for (int i = 1; i <= 3; i = i + 1) {
 }
 ```
 
-## 12. Out of scope for v0.4
+## 12. Out of scope for v0.5
 
 Arrays, methods and constructors, nested structs, struct equality, `for` without clauses,
 `do while`, `switch`, casts, `++`/`+=`, ternary operator, string interpolation, generics,

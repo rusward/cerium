@@ -1,7 +1,7 @@
-"""Recursive-descent parser for Hydrogen."""
+"""Recursive-descent parser for Cerium."""
 
 from . import nodes
-from .errors import HydrogenError
+from .errors import CeriumError
 
 TYPE_KEYWORDS = ("int", "double", "bool", "string")
 
@@ -59,9 +59,9 @@ class Parser:
             return token.value, token
         raise self.error(f"expected type, got {token.describe()}")
 
-    def error(self, message: str, token=None) -> HydrogenError:
+    def error(self, message: str, token=None) -> CeriumError:
         token = token or self.current
-        return HydrogenError(message, token.line, token.col)
+        return CeriumError(message, token.line, token.col)
 
     # -- program -----------------------------------------------------------
 

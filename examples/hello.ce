@@ -1,4 +1,4 @@
-// hello.hy - variables, typed values and log().
+// hello.ce - variables, typed values and log().
 string name = "world";
 int n = 42;
 double pi = 3.14;

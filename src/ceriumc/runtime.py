@@ -1,23 +1,23 @@
 """C runtime helpers embedded into every generated program."""
 
 RUNTIME_SOURCE = r"""
-static void hy_print_int(int64_t value) {
+static void ce_print_int(int64_t value) {
     printf("%" PRId64, value);
 }
 
-static void hy_print_double(double value) {
+static void ce_print_double(double value) {
     printf("%g", value);
 }
 
-static void hy_print_bool(bool value) {
+static void ce_print_bool(bool value) {
     fputs(value ? "true" : "false", stdout);
 }
 
-static void hy_print_string(const char *value) {
+static void ce_print_string(const char *value) {
     fputs(value, stdout);
 }
 
-static const char *hy_str_concat(const char *a, const char *b) {
+static const char *ce_str_concat(const char *a, const char *b) {
     size_t a_len = strlen(a);
     size_t b_len = strlen(b);
     char *result = (char *)malloc(a_len + b_len + 1);
@@ -30,11 +30,11 @@ static const char *hy_str_concat(const char *a, const char *b) {
     return result;
 }
 
-static bool hy_str_eq(const char *a, const char *b) {
+static bool ce_str_eq(const char *a, const char *b) {
     return strcmp(a, b) == 0;
 }
 
-static void hy_parse_fail(
+static void ce_parse_fail(
     const char *kind,
     const char *label,
     const char *text,
@@ -43,12 +43,12 @@ static void hy_parse_fail(
     fprintf(
         stderr,
         "runtime error: invalid %s %s: '%s': %s:%d\n",
-        kind, label, text, HY_FILE, line
+        kind, label, text, CE_FILE, line
     );
     exit(1);
 }
 
-static char *hy_copy_text(const char *text) {
+static char *ce_copy_text(const char *text) {
     size_t length = strlen(text);
     char *copy = (char *)malloc(length + 1);
     if (copy == NULL) {
@@ -59,14 +59,14 @@ static char *hy_copy_text(const char *text) {
     return copy;
 }
 
-static void hy_prompt(const char *prompt) {
+static void ce_prompt(const char *prompt) {
     if (prompt != NULL) {
         fputs(prompt, stdout);
         fflush(stdout);
     }
 }
 
-static char *hy_trim(char *text) {
+static char *ce_trim(char *text) {
     while (*text == ' ' || *text == '\t') {
         text++;
     }
@@ -77,12 +77,12 @@ static char *hy_trim(char *text) {
     return text;
 }
 
-static char *hy_read_line(int line) {
+static char *ce_read_line(int line) {
     size_t capacity = 128;
     size_t length = 0;
     char *buffer = (char *)malloc(capacity);
     if (buffer == NULL) {
-        fprintf(stderr, "runtime error: out of memory: %s:%d\n", HY_FILE, line);
+        fprintf(stderr, "runtime error: out of memory: %s:%d\n", CE_FILE, line);
         exit(1);
     }
 
@@ -97,7 +97,7 @@ static char *hy_read_line(int line) {
                 fprintf(
                     stderr,
                     "runtime error: out of memory: %s:%d\n",
-                    HY_FILE, line
+                    CE_FILE, line
                 );
                 exit(1);
             }
@@ -111,7 +111,7 @@ static char *hy_read_line(int line) {
         fprintf(
             stderr,
             "runtime error: unexpected end of input: %s:%d\n",
-            HY_FILE, line
+            CE_FILE, line
         );
         exit(1);
     }
@@ -123,39 +123,39 @@ static char *hy_read_line(int line) {
     return buffer;
 }
 
-static int64_t hy_parse_int(const char *source, const char *label, int line) {
-    char *buffer = hy_copy_text(source);
-    char *text = hy_trim(buffer);
+static int64_t ce_parse_int(const char *source, const char *label, int line) {
+    char *buffer = ce_copy_text(source);
+    char *text = ce_trim(buffer);
     char *end = NULL;
 
     errno = 0;
     long long value = strtoll(text, &end, 10);
     if (end == text || *end != '\0' || errno == ERANGE) {
-        hy_parse_fail("int", label, text, line);
+        ce_parse_fail("int", label, text, line);
     }
 
     free(buffer);
     return (int64_t)value;
 }
 
-static double hy_parse_double(const char *source, const char *label, int line) {
-    char *buffer = hy_copy_text(source);
-    char *text = hy_trim(buffer);
+static double ce_parse_double(const char *source, const char *label, int line) {
+    char *buffer = ce_copy_text(source);
+    char *text = ce_trim(buffer);
     char *end = NULL;
 
     errno = 0;
     double value = strtod(text, &end);
     if (end == text || *end != '\0' || errno == ERANGE) {
-        hy_parse_fail("double", label, text, line);
+        ce_parse_fail("double", label, text, line);
     }
 
     free(buffer);
     return value;
 }
 
-static bool hy_parse_bool(const char *source, const char *label, int line) {
-    char *buffer = hy_copy_text(source);
-    char *text = hy_trim(buffer);
+static bool ce_parse_bool(const char *source, const char *label, int line) {
+    char *buffer = ce_copy_text(source);
+    char *text = ce_trim(buffer);
 
     bool result;
     if (strcmp(text, "true") == 0) {
@@ -163,7 +163,7 @@ static bool hy_parse_bool(const char *source, const char *label, int line) {
     } else if (strcmp(text, "false") == 0) {
         result = false;
     } else {
-        hy_parse_fail("bool", label, text, line);
+        ce_parse_fail("bool", label, text, line);
         result = false;
     }
 
@@ -171,88 +171,88 @@ static bool hy_parse_bool(const char *source, const char *label, int line) {
     return result;
 }
 
-static const char *hy_input_string(const char *prompt, int line) {
-    hy_prompt(prompt);
-    return hy_read_line(line);
+static const char *ce_input_string(const char *prompt, int line) {
+    ce_prompt(prompt);
+    return ce_read_line(line);
 }
 
-static int64_t hy_input_int(const char *prompt, int line) {
-    hy_prompt(prompt);
-    char *buffer = hy_read_line(line);
-    int64_t value = hy_parse_int(buffer, "input", line);
+static int64_t ce_input_int(const char *prompt, int line) {
+    ce_prompt(prompt);
+    char *buffer = ce_read_line(line);
+    int64_t value = ce_parse_int(buffer, "input", line);
     free(buffer);
     return value;
 }
 
-static double hy_input_double(const char *prompt, int line) {
-    hy_prompt(prompt);
-    char *buffer = hy_read_line(line);
-    double value = hy_parse_double(buffer, "input", line);
+static double ce_input_double(const char *prompt, int line) {
+    ce_prompt(prompt);
+    char *buffer = ce_read_line(line);
+    double value = ce_parse_double(buffer, "input", line);
     free(buffer);
     return value;
 }
 
-static bool hy_input_bool(const char *prompt, int line) {
-    hy_prompt(prompt);
-    char *buffer = hy_read_line(line);
-    bool value = hy_parse_bool(buffer, "input", line);
+static bool ce_input_bool(const char *prompt, int line) {
+    ce_prompt(prompt);
+    char *buffer = ce_read_line(line);
+    bool value = ce_parse_bool(buffer, "input", line);
     free(buffer);
     return value;
 }
 
-static int64_t hy_string_to_int(const char *text, int line) {
-    return hy_parse_int(text, "value", line);
+static int64_t ce_string_to_int(const char *text, int line) {
+    return ce_parse_int(text, "value", line);
 }
 
-static double hy_string_to_double(const char *text, int line) {
-    return hy_parse_double(text, "value", line);
+static double ce_string_to_double(const char *text, int line) {
+    return ce_parse_double(text, "value", line);
 }
 
-static bool hy_string_to_bool(const char *text, int line) {
-    return hy_parse_bool(text, "value", line);
+static bool ce_string_to_bool(const char *text, int line) {
+    return ce_parse_bool(text, "value", line);
 }
 
-static const char *hy_int_to_string(int64_t value) {
+static const char *ce_int_to_string(int64_t value) {
     char buffer[32];
     snprintf(buffer, sizeof(buffer), "%" PRId64, value);
-    return hy_str_concat(buffer, "");
+    return ce_str_concat(buffer, "");
 }
 
-static const char *hy_double_to_string(double value) {
+static const char *ce_double_to_string(double value) {
     char buffer[64];
     snprintf(buffer, sizeof(buffer), "%g", value);
-    return hy_str_concat(buffer, "");
+    return ce_str_concat(buffer, "");
 }
 
-static const char *hy_bool_to_string(bool value) {
+static const char *ce_bool_to_string(bool value) {
     return value ? "true" : "false";
 }
 
 /* Two's-complement wraparound, matching C# unchecked arithmetic. */
-static int64_t hy_add_int(int64_t a, int64_t b) {
+static int64_t ce_add_int(int64_t a, int64_t b) {
     return (int64_t)((uint64_t)a + (uint64_t)b);
 }
 
-static int64_t hy_sub_int(int64_t a, int64_t b) {
+static int64_t ce_sub_int(int64_t a, int64_t b) {
     return (int64_t)((uint64_t)a - (uint64_t)b);
 }
 
-static int64_t hy_mul_int(int64_t a, int64_t b) {
+static int64_t ce_mul_int(int64_t a, int64_t b) {
     return (int64_t)((uint64_t)a * (uint64_t)b);
 }
 
-static int64_t hy_neg_int(int64_t a) {
+static int64_t ce_neg_int(int64_t a) {
     return (int64_t)(0u - (uint64_t)a);
 }
 
-static void hy_fatal_div(int line) {
-    fprintf(stderr, "runtime error: division by zero: %s:%d\n", HY_FILE, line);
+static void ce_fatal_div(int line) {
+    fprintf(stderr, "runtime error: division by zero: %s:%d\n", CE_FILE, line);
     exit(1);
 }
 
-static int64_t hy_div_int(int64_t a, int64_t b, int line) {
+static int64_t ce_div_int(int64_t a, int64_t b, int line) {
     if (b == 0) {
-        hy_fatal_div(line);
+        ce_fatal_div(line);
     }
     if (a == INT64_MIN && b == -1) {
         return INT64_MIN;
@@ -260,9 +260,9 @@ static int64_t hy_div_int(int64_t a, int64_t b, int line) {
     return a / b;
 }
 
-static int64_t hy_mod_int(int64_t a, int64_t b, int line) {
+static int64_t ce_mod_int(int64_t a, int64_t b, int line) {
     if (b == 0) {
-        hy_fatal_div(line);
+        ce_fatal_div(line);
     }
     if (a == INT64_MIN && b == -1) {
         return 0;

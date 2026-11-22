@@ -1,6 +1,6 @@
-# Contributing to Hydrogen
+# Contributing to Cerium
 
-Thanks for taking a look at Hydrogen. The project is an early MVP, so small focused changes are
+Thanks for taking a look at Cerium. The project is an early MVP, so small focused changes are
 the easiest to review.
 
 ## Requirements
@@ -12,12 +12,12 @@ the easiest to review.
 ## Development setup
 
 ```sh
-git clone https://github.com/rusward/hydrogen.git
-cd hydrogen
+git clone https://github.com/rusward/cerium.git
+cd cerium
 
 python3 -m pip install -e .
 # or run without installing:
-./hydrogenc --version
+./ceriumc --version
 
 make test
 ```
@@ -28,7 +28,7 @@ skipped automatically when `gcc` is not available.
 Useful commands:
 
 ```sh
-make check        # type-check examples/hello.hy
+make check        # type-check examples/hello.ce
 make examples     # build every example into build/
 make clean
 ```
@@ -36,7 +36,7 @@ make clean
 ## Project layout
 
 ```
-src/hydrogenc/
+src/ceriumc/
   lexer.py        tokens, comments, literals
   parser.py       recursive descent, AST construction
   nodes.py        dataclass AST nodes

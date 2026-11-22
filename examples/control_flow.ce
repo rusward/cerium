@@ -1,4 +1,4 @@
-// control_flow.hy - if/else if/else, while and boolean logic.
+// control_flow.ce - if/else if/else, while and boolean logic.
 int score = 75;
 
 if (score >= 90) {

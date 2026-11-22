@@ -2,15 +2,15 @@ import unittest
 
 import support  # noqa: F401
 
-from hydrogenc import nodes
-from hydrogenc.errors import HydrogenError
-from hydrogenc.lexer import Lexer
-from hydrogenc.parser import Parser
+from ceriumc import nodes
+from ceriumc.errors import CeriumError
+from ceriumc.lexer import Lexer
+from ceriumc.parser import Parser
 
 
 def parse(text):
-    tokens = Lexer(text, "test.hy").tokenize()
-    return Parser(tokens, "test.hy").parse()
+    tokens = Lexer(text, "test.ce").tokenize()
+    return Parser(tokens, "test.ce").parse()
 
 
 class ParserTests(unittest.TestCase):
@@ -75,22 +75,22 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(len(statement.body), 1)
 
     def test_missing_semicolon(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             parse("int x = 1\nlog(x);")
         self.assertIn("expected ';'", caught.exception.message)
         self.assertEqual(caught.exception.line, 2)
 
     def test_missing_closing_brace(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             parse("while (true) { log(1);")
         self.assertIn("expected '}'", caught.exception.message)
 
     def test_missing_condition_parentheses(self):
-        with self.assertRaises(HydrogenError):
+        with self.assertRaises(CeriumError):
             parse("if true { log(1); }")
 
     def test_expected_expression(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             parse("int x = ;")
         self.assertIn("expected expression", caught.exception.message)
 
@@ -153,7 +153,7 @@ class ParserTests(unittest.TestCase):
         self.assertEqual(len(statement.body), 1)
 
     def test_for_update_must_be_assignment(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             parse("for (int i = 0; i < 3; i + 1) { log(i); }")
         self.assertIn("expected '='", caught.exception.message)
 
@@ -169,12 +169,12 @@ class ParserTests(unittest.TestCase):
         self.assertIsNone(statement.expr)
 
     def test_function_requires_arrow(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             parse("func f() int { return 1; }")
         self.assertIn("expected '->'", caught.exception.message)
 
     def test_empty_struct_is_rejected(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             parse("struct Empty { }")
         self.assertIn("at least one field", caught.exception.message)
 

@@ -10,7 +10,7 @@ class Diagnostic:
     col: int
 
 
-class HydrogenError(Exception):
+class CeriumError(Exception):
     """A single fatal error raised by the lexer or the parser."""
 
     def __init__(self, message: str, line: int = 1, col: int = 1):
@@ -20,7 +20,7 @@ class HydrogenError(Exception):
         self.col = col
 
 
-class HydrogenErrors(Exception):
+class CeriumErrors(Exception):
     """A batch of errors collected by the type checker."""
 
     def __init__(self, errors):

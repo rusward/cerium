@@ -1,6 +1,17 @@
 # Changelog
 
-All notable changes to Hydrogen are documented in this file.
+All notable changes to Cerium are documented in this file.
+
+## [0.5.0] - 2026-11-22
+
+### Changed
+
+- **BREAKING:** the project is renamed from Hydrogen to Cerium because the old name was
+  already used by another language;
+- source file extension changed from `.hy` to `.ce`;
+- compiler command and Python package renamed from `hydrogenc` to `ceriumc`;
+- C runtime prefix renamed from `hy_` to `ce_`, `HY_FILE` to `CE_FILE`;
+- GitHub repository moved from `rusward/hydrogen` to `rusward/cerium`.
 
 ## [0.4.0] - 2026-11-22
 

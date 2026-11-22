@@ -9,6 +9,3 @@ venv/
 *.o
 *.out
 
-# Local binaries produced while trying the compiler.
-/hello
-/my_test

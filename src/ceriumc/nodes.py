@@ -1,4 +1,4 @@
-"""AST node definitions for Hydrogen."""
+"""AST node definitions for Cerium."""
 
 from dataclasses import dataclass
 from typing import Any, List, Optional, Tuple

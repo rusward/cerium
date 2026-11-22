@@ -1,8 +1,8 @@
-"""Lexer for the Hydrogen language."""
+"""Lexer for the Cerium language."""
 
 from dataclasses import dataclass
 
-from .errors import HydrogenError
+from .errors import CeriumError
 
 KEYWORDS = {
     "int",
@@ -120,7 +120,7 @@ class Lexer:
             self.i += 1
 
     def _error(self, message: str, line=None, col=None):
-        raise HydrogenError(
+        raise CeriumError(
             message,
             self.line if line is None else line,
             self.col if col is None else col,

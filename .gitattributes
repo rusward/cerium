@@ -1,6 +1,6 @@
 * text=auto eol=lf
 
-*.hy text eol=lf
+*.ce text eol=lf
 *.py text eol=lf
 *.md text eol=lf
 *.png binary

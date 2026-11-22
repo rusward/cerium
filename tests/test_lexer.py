@@ -2,12 +2,12 @@ import unittest
 
 import support  # noqa: F401  (adds src to sys.path)
 
-from hydrogenc.errors import HydrogenError
-from hydrogenc.lexer import Lexer
+from ceriumc.errors import CeriumError
+from ceriumc.lexer import Lexer
 
 
 def lex(text):
-    return Lexer(text, "test.hy").tokenize()
+    return Lexer(text, "test.ce").tokenize()
 
 
 def without_eof(text):
@@ -67,34 +67,34 @@ class LexerTests(unittest.TestCase):
         self.assertEqual(token.value, 'a\nb\t"c\\')
 
     def test_unterminated_string(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             lex('"abc')
         self.assertIn("unterminated string", caught.exception.message)
 
     def test_newline_in_string(self):
-        with self.assertRaises(HydrogenError):
+        with self.assertRaises(CeriumError):
             lex('"abc\ndef"')
 
     def test_unknown_escape(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             lex(r'"a\q"')
         self.assertIn("unknown escape", caught.exception.message)
 
     def test_unterminated_block_comment(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             lex("/* nope")
         self.assertIn("unterminated block comment", caught.exception.message)
 
     def test_malformed_number(self):
-        with self.assertRaises(HydrogenError):
+        with self.assertRaises(CeriumError):
             lex("12abc")
 
     def test_malformed_float(self):
-        with self.assertRaises(HydrogenError):
+        with self.assertRaises(CeriumError):
             lex("1.")
 
     def test_unexpected_character(self):
-        with self.assertRaises(HydrogenError) as caught:
+        with self.assertRaises(CeriumError) as caught:
             lex("a @ b")
         self.assertIn("unexpected character", caught.exception.message)
 

@@ -1,4 +1,4 @@
-"""Command-line interface for the Hydrogen compiler."""
+"""Command-line interface for the Cerium compiler."""
 
 import os
 import subprocess
@@ -8,14 +8,14 @@ import tempfile
 from . import __version__
 from .checker import TypeChecker
 from .codegen_c import CCodegen
-from .errors import Diagnostic, HydrogenError, HydrogenErrors, render
+from .errors import Diagnostic, CeriumError, CeriumErrors, render
 from .lexer import Lexer
 from .parser import Parser
 
-USAGE = """usage: hydrogenc <command> [options] <file.hy>
+USAGE = """usage: ceriumc <command> [options] <file.ce>
 
 commands:
-  build     compile a .hy program into a native executable
+  build     compile a .ce program into a native executable
   check     parse and type-check without producing a binary
   emit-c    print the generated C source
 
@@ -53,7 +53,7 @@ def run(argv) -> int:
         return 0
 
     if command == "--version":
-        print(f"hydrogenc {__version__}")
+        print(f"ceriumc {__version__}")
         return 0
 
     if command not in ("build", "check", "emit-c"):
@@ -74,11 +74,11 @@ def run(argv) -> int:
 
     try:
         c_source = compile_to_c(source, source_path)
-    except HydrogenError as error:
+    except CeriumError as error:
         diagnostic = Diagnostic(error.message, error.line, error.col)
         sys.stderr.write(render(source_path, source, diagnostic) + "\n")
         return 1
-    except HydrogenErrors as errors:
+    except CeriumErrors as errors:
         for diagnostic in sorted(errors.errors, key=lambda d: (d.line, d.col)):
             sys.stderr.write(render(source_path, source, diagnostic) + "\n")
         return 1
@@ -113,7 +113,7 @@ def read_source(path: str):
             return handle.read()
     except OSError as error:
         reason = error.strerror or str(error)
-        print(f"hydrogenc: error: cannot read '{path}': {reason}", file=sys.stderr)
+        print(f"ceriumc: error: cannot read '{path}': {reason}", file=sys.stderr)
         return None
 
 
@@ -123,7 +123,7 @@ def write_text(path: str, text: str) -> int:
             handle.write(text)
     except OSError as error:
         reason = error.strerror or str(error)
-        print(f"hydrogenc: error: cannot write '{path}': {reason}", file=sys.stderr)
+        print(f"ceriumc: error: cannot write '{path}': {reason}", file=sys.stderr)
         return 1
     return 0
 
@@ -136,9 +136,9 @@ def build_binary(c_source: str, source_path: str, options) -> int:
         if status != 0:
             return status
 
-    temporary = tempfile.TemporaryDirectory(prefix="hydrogenc-")
+    temporary = tempfile.TemporaryDirectory(prefix="ceriumc-")
     if options["keep_c"]:
-        directory = tempfile.mkdtemp(prefix="hydrogenc-")
+        directory = tempfile.mkdtemp(prefix="ceriumc-")
         temporary.cleanup()
         cleanup = None
     else:
@@ -159,13 +159,13 @@ def build_binary(c_source: str, source_path: str, options) -> int:
             result = subprocess.run(command, capture_output=True, text=True)
         except FileNotFoundError:
             print(
-                f"hydrogenc: error: C compiler '{options['cc']}' not found",
+                f"ceriumc: error: C compiler '{options['cc']}' not found",
                 file=sys.stderr,
             )
             return 3
         except OSError as error:
             print(
-                f"hydrogenc: error: cannot run C compiler: {error}",
+                f"ceriumc: error: cannot run C compiler: {error}",
                 file=sys.stderr,
             )
             return 3
@@ -175,13 +175,13 @@ def build_binary(c_source: str, source_path: str, options) -> int:
                 sys.stderr.write(result.stderr)
                 if not result.stderr.endswith("\n"):
                     sys.stderr.write("\n")
-            print("hydrogenc: error: C compilation failed", file=sys.stderr)
+            print("ceriumc: error: C compilation failed", file=sys.stderr)
             if options["keep_c"]:
-                print(f"hydrogenc: kept C source at {c_path}", file=sys.stderr)
+                print(f"ceriumc: kept C source at {c_path}", file=sys.stderr)
             return 3
 
         if options["keep_c"]:
-            print(f"hydrogenc: kept C source at {c_path}", file=sys.stderr)
+            print(f"ceriumc: kept C source at {c_path}", file=sys.stderr)
         return 0
     finally:
         if cleanup is not None:
@@ -272,6 +272,6 @@ def parse_options(args, command: str):
 
 
 def usage_error(message: str) -> int:
-    print(f"hydrogenc: error: {message}", file=sys.stderr)
+    print(f"ceriumc: error: {message}", file=sys.stderr)
     print(USAGE, file=sys.stderr)
     return 2

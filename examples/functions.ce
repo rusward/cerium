@@ -1,4 +1,4 @@
-// functions.hy - user functions, recursion and void returns.
+// functions.ce - user functions, recursion and void returns.
 func factorial(int n) -> int {
     if (n <= 1) {
         return 1;
@@ -14,6 +14,6 @@ func greet(string name) -> void {
     log("hello,", name);
 }
 
-greet("hydrogen");
+greet("cerium");
 log("3 + 4 =", add(3, 4));
 log("5! =", factorial(5));

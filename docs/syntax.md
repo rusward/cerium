@@ -1,9 +1,9 @@
-# Синтаксис Hydrogen
+# Синтаксис Cerium
 
-Документация по языку Hydrogen версии 0.4. Формальная грамматика в EBNF — в
+Документация по языку Cerium версии 0.5. Формальная грамматика в EBNF — в
 [SPEC.md](../SPEC.md).
 
-## 0. Чем Hydrogen отличается
+## 0. Чем Cerium отличается
 
 Синтаксис знакомый, если вы писали на C# или Java, но у языка есть свой почерк:
 
@@ -30,7 +30,7 @@ loop { ... break; }               // бесконечный цикл
 
 ## 1. Структура программы
 
-Программа — файл `.hy`. Внутри могут быть:
+Программа — файл `.ce`. Внутри могут быть:
 
 - объявления структур (`struct`);
 - объявления функций (`func`);
@@ -105,7 +105,7 @@ true  false
 int count = 10;
 double ratio = 0.5;
 bool ready = false;
-string label = "hydrogen";
+string label = "cerium";
 ```
 
 ## 5. Литералы
@@ -349,8 +349,8 @@ log(age, height, ok);
 При неверном вводе программа печатает ошибку и завершается с кодом 1:
 
 ```
-runtime error: invalid int input: '12abc': program.hy:3
-runtime error: unexpected end of input: program.hy:5
+runtime error: invalid int input: '12abc': program.ce:3
+runtime error: unexpected end of input: program.ce:5
 ```
 
 Встроенные функции ввода нельзя переопределить через `func input(...)`.
@@ -397,8 +397,8 @@ log(enabled); // true
 - при неверном тексте — ошибка рантайма и код 1:
 
 ```
-runtime error: invalid int value: '12abc': program.hy:3
-runtime error: invalid bool value: 'yes': program.hy:7
+runtime error: invalid int value: '12abc': program.ce:3
+runtime error: invalid bool value: 'yes': program.ce:7
 ```
 
 Типичное применение — склеить число или `bool` со строкой:
@@ -561,7 +561,7 @@ func greet(string name) -> void {
 
 ```csharp
 log(add(2, 3)); // 5
-greet("hydrogen");
+greet("cerium");
 ```
 
 Аргументы проверяются по количеству и типам. Результат можно игнорировать:
@@ -651,7 +651,7 @@ struct User {
   (`int`, `double`, `bool`, `string`);
 - хотя бы одно поле;
 - имена полей уникальны;
-- вложенные структуры в v0.4 не поддерживаются.
+- вложенные структуры в v0.5 не поддерживаются.
 
 ### Литерал структуры
 
@@ -715,7 +715,7 @@ log(makePoint(1, 2).x); // 1
 Ошибки компиляции и типов печатаются с файлом, строкой и колонкой:
 
 ```
-examples/errors/missing_return.hy:2:1: error: function 'absolute' must return a value on all paths
+examples/errors/missing_return.ce:2:1: error: function 'absolute' must return a value on all paths
     func absolute(int x) -> int {
     ^
 ```
@@ -725,7 +725,7 @@ examples/errors/missing_return.hy:2:1: error: function 'absolute' must return a 
 Деление на ноль для `int` обнаруживается во время выполнения:
 
 ```
-runtime error: division by zero: program.hy:5
+runtime error: division by zero: program.ce:5
 ```
 
 Код возврата — `1`. Деление `double` на ноль не проверяется и даёт `inf` или `nan`.
@@ -733,7 +733,7 @@ runtime error: division by zero: program.hy:5
 ## 15. Полный пример
 
 ```csharp
-// bank.hy
+// bank.ce
 struct Account {
     string owner;
     int balance;
@@ -761,7 +761,7 @@ if (account.balance >= 250) {
 Сборка и запуск:
 
 ```sh
-./hydrogenc build examples/structs.hy -o structs
+./ceriumc build examples/structs.ce -o structs
 ./structs
 ```
 
@@ -830,7 +830,7 @@ func ping() -> void {
 }
 ```
 
-## 17. Ограничения v0.4
+## 17. Ограничения v0.5
 
 Не поддерживаются:
 
@@ -851,10 +851,10 @@ func ping() -> void {
 ## 18. CLI кратко
 
 ```sh
-./hydrogenc build file.hy -o program   # собрать бинарник
-./hydrogenc check file.hy              # только проверить синтаксис и типы
-./hydrogenc emit-c file.hy             # показать сгенерированный C
-./hydrogenc --version
+./ceriumc build file.ce -o program   # собрать бинарник
+./ceriumc check file.ce              # только проверить синтаксис и типы
+./ceriumc emit-c file.ce             # показать сгенерированный C
+./ceriumc --version
 ```
 
 Дополнительные флаги `build`: `--emit-c PATH`, `--keep-c`, `--static`, `--cc NAME`.

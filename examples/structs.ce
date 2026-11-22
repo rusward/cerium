@@ -1,4 +1,4 @@
-// structs.hy - struct declarations, literals, fields and field assignment.
+// structs.ce - struct declarations, literals, fields and field assignment.
 struct Point {
     int x;
     int y;

@@ -3,14 +3,14 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "hydrogenc"
-version = "0.4.0"
-description = "Hydrogen: a small statically typed language with a C99 backend"
+name = "ceriumc"
+version = "0.5.0"
+description = "Cerium: a small statically typed language with a C99 backend"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
-authors = [{ name = "Hydrogen contributors" }]
-keywords = ["compiler", "programming-language", "c99", "hydrogen"]
+authors = [{ name = "Cerium contributors" }]
+keywords = ["compiler", "programming-language", "c99", "cerium"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
@@ -30,12 +30,12 @@ classifiers = [
 dependencies = []
 
 [project.scripts]
-hydrogenc = "hydrogenc.cli:main"
+ceriumc = "ceriumc.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/rusward/hydrogen"
-Repository = "https://github.com/rusward/hydrogen"
-Issues = "https://github.com/rusward/hydrogen/issues"
+Homepage = "https://github.com/rusward/cerium"
+Repository = "https://github.com/rusward/cerium"
+Issues = "https://github.com/rusward/cerium/issues"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

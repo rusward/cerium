@@ -2,25 +2,25 @@ import unittest
 
 import support  # noqa: F401
 
-from hydrogenc.checker import TypeChecker
-from hydrogenc.errors import HydrogenErrors
-from hydrogenc.lexer import Lexer
-from hydrogenc.parser import Parser
+from ceriumc.checker import TypeChecker
+from ceriumc.errors import CeriumErrors
+from ceriumc.lexer import Lexer
+from ceriumc.parser import Parser
 
 
 def parse(text):
-    tokens = Lexer(text, "test.hy").tokenize()
-    return Parser(tokens, "test.hy").parse()
+    tokens = Lexer(text, "test.ce").tokenize()
+    return Parser(tokens, "test.ce").parse()
 
 
 def check(text):
-    return TypeChecker("test.hy").check(parse(text))
+    return TypeChecker("test.ce").check(parse(text))
 
 
 def error_messages(text):
     try:
         check(text)
-    except HydrogenErrors as errors:
+    except CeriumErrors as errors:
         return [diagnostic.message for diagnostic in errors.errors]
     raise AssertionError("expected type checking to fail")
 
@@ -157,7 +157,7 @@ class CheckerTests(unittest.TestCase):
         )
 
     def test_void_function(self):
-        check('func ping(string name) -> void { log(name); } ping("hy");')
+        check('func ping(string name) -> void { log(name); } ping("ce");')
 
     def test_discarding_non_void_result_is_allowed(self):
         check("func one() -> int { return 1; } one();")

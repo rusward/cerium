@@ -1,4 +1,4 @@
-// fizzbuzz.hy - loops, modulo and if/else if/else.
+// fizzbuzz.ce - loops, modulo and if/else if/else.
 int i = 1;
 while (i <= 15) {
     if (i % 15 == 0) {

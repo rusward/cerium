@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="logo/icon.png" alt="Hydrogen logo" width="140">
+  <img src="logo/cerium-logo-ref.png" alt="Cerium mascot" width="420">
 </p>
 
-<h1 align="center">Hydrogen</h1>
+<h1 align="center">Cerium</h1>
 
 <p align="center">
   Небольшой статически типизированный язык с C#-подобным синтаксисом и собственным характером.
 </p>
 
 <p align="center">
-  <a href="https://github.com/rusward/hydrogen/actions/workflows/ci.yml">
-    <img src="https://github.com/rusward/hydrogen/actions/workflows/ci.yml/badge.svg" alt="CI">
+  <a href="https://github.com/rusward/cerium/actions/workflows/ci.yml">
+    <img src="https://github.com/rusward/cerium/actions/workflows/ci.yml/badge.svg" alt="CI">
   </a>
   <a href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-yellow.svg" alt="License: MIT">
@@ -19,11 +19,11 @@
   <img src="https://img.shields.io/badge/backend-C99%20%2B%20gcc-lightgrey.svg" alt="C99 backend">
 </p>
 
-Hydrogen (`hydrogenc`) компилирует `.hy` в C99 и собирает нативный бинарник через `gcc`.
+Cerium (`ceriumc`) компилирует `.ce` в C99 и собирает нативный бинарник через `gcc`.
 Функции объявляются через `func ... -> тип`, структуры собираются литералами без `new`,
 а циклы бывают трёх видов — `while`, `for` и `loop`.
 
-> **Статус:** ранняя версия 0.4.0. Язык и синтаксис ещё могут меняться.
+> **Статус:** ранняя версия 0.5.0. Язык и синтаксис ещё могут меняться.
 
 ## Возможности
 
@@ -34,7 +34,7 @@ Hydrogen (`hydrogenc`) компилирует `.hy` в C99 и собирает �
 - `if / else if / else`, `while`, `for`, `loop`, `break`, `continue`;
 - вывод через `log(...)` и ввод с консоли: `input()`, `inputInt()`, `inputDouble()`, `inputBool()`;
 - явные преобразования: `toString`, `toInt`, `toDouble`, `toBool`;
-- блочные области видимости и подробная диагностика с позицией в `.hy`;
+- блочные области видимости и подробная диагностика с позицией в `.ce`;
 - компилятор на Python без внешних зависимостей.
 
 ## Пример
@@ -62,7 +62,7 @@ for (int i = 1; i <= 3; i = i + 1) {
 ```
 
 ```
-$ hydrogenc build example.hy -o example
+$ ceriumc build example.ce -o example
 $ ./example
 distance^2 = 25
 step 1
@@ -113,28 +113,28 @@ log(port, ratio, enabled); // 8080 0.25 true
 ## Установка
 
 ```sh
-git clone https://github.com/rusward/hydrogen.git
-cd hydrogen
+git clone https://github.com/rusward/cerium.git
+cd cerium
 
 python3 -m pip install -e .
-hydrogenc --version
+ceriumc --version
 ```
 
 Можно обойтись без установки — в корне лежит launcher:
 
 ```sh
-./hydrogenc --version
-./hydrogenc build examples/hello.hy -o hello
+./ceriumc --version
+./ceriumc build examples/hello.ce -o hello
 ./hello
 ```
 
 ## CLI
 
 ```
-hydrogenc build <file.hy> [-o out] [--emit-c PATH] [--keep-c] [--static] [--cc gcc]
-hydrogenc check <file.hy>
-hydrogenc emit-c <file.hy> [-o out.c]
-hydrogenc --version
+ceriumc build <file.ce> [-o out] [--emit-c PATH] [--keep-c] [--static] [--cc gcc]
+ceriumc check <file.ce>
+ceriumc emit-c <file.ce> [-o out.c]
+ceriumc --version
 ```
 
 - `build` собирает нативный бинарник;
@@ -158,7 +158,7 @@ End-to-end тесты собирают настоящие бинарники и 
 ## Структура проекта
 
 ```
-src/hydrogenc/    компилятор (лексер, парсер, проверка типов, кодоген)
+src/ceriumc/    компилятор (лексер, парсер, проверка типов, кодоген)
 examples/         примеры программ и примеры ошибок
 tests/            unittest-набор
 docs/syntax.md    практическое руководство по синтаксису (на русском)
@@ -183,4 +183,4 @@ logo/             ассеты логотипа
 
 ## Лицензия
 
-[MIT](LICENSE) © Hydrogen contributors.
+[MIT](LICENSE) © Cerium contributors.

@@ -1,4 +1,4 @@
-"""Shared helpers for the Hydrogen test suite."""
+"""Shared helpers for the Cerium test suite."""
 
 import os
 import subprocess
@@ -17,7 +17,7 @@ def run_cli(*args, cwd=None):
     existing = env.get("PYTHONPATH")
     env["PYTHONPATH"] = SRC + (os.pathsep + existing if existing else "")
     return subprocess.run(
-        [sys.executable, "-m", "hydrogenc", *args],
+        [sys.executable, "-m", "ceriumc", *args],
         cwd=cwd or ROOT,
         env=env,
         capture_output=True,

@@ -12,11 +12,11 @@ GCC = shutil.which("gcc")
 @unittest.skipUnless(GCC, "gcc is required for end-to-end tests")
 class EndToEndTests(unittest.TestCase):
     def make_project(self):
-        directory = tempfile.mkdtemp(prefix="hydrogenc-test-")
+        directory = tempfile.mkdtemp(prefix="ceriumc-test-")
         self.addCleanup(shutil.rmtree, directory, True)
         return directory
 
-    def build(self, source, name="prog.hy"):
+    def build(self, source, name="prog.ce"):
         directory = self.make_project()
         source_path = os.path.join(directory, name)
         support.write(source_path, source)
@@ -31,7 +31,7 @@ class EndToEndTests(unittest.TestCase):
         )
 
     def test_hello_example(self):
-        binary, _, _ = self.build(support.read(os.path.join(support.EXAMPLES, "hello.hy")))
+        binary, _, _ = self.build(support.read(os.path.join(support.EXAMPLES, "hello.ce")))
         result = self.run_binary(binary)
         self.assertEqual(result.returncode, 0)
         self.assertEqual(
@@ -45,7 +45,7 @@ class EndToEndTests(unittest.TestCase):
         )
 
     def test_types_example(self):
-        binary, _, _ = self.build(support.read(os.path.join(support.EXAMPLES, "types.hy")))
+        binary, _, _ = self.build(support.read(os.path.join(support.EXAMPLES, "types.ce")))
         result = self.run_binary(binary)
         self.assertEqual(
             result.stdout,
@@ -58,7 +58,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_arithmetic_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "arithmetic.hy"))
+            support.read(os.path.join(support.EXAMPLES, "arithmetic.ce"))
         )
         result = self.run_binary(binary)
         self.assertEqual(
@@ -76,7 +76,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_control_flow_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "control_flow.hy"))
+            support.read(os.path.join(support.EXAMPLES, "control_flow.ce"))
         )
         result = self.run_binary(binary)
         self.assertEqual(
@@ -90,7 +90,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_string_equality_uses_value_semantics(self):
         binary, _, _ = self.build(
-            'string a = "hy"; string b = "d" + "rogen"; log(a + b == "hydrogen");\n'
+            'string a = "ce"; string b = "r" + "ium"; log(a + b == "cerium");\n'
         )
         result = self.run_binary(binary)
         self.assertEqual(result.stdout, "true\n")
@@ -104,7 +104,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_division_by_zero_is_a_runtime_error(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "div_by_zero.hy")
+        source_path = os.path.join(directory, "div_by_zero.ce")
         support.write(source_path, "int zero = 0;\nlog(10 / zero);\n")
         binary = os.path.join(directory, "prog")
         result = support.cli("build", source_path, "-o", binary)
@@ -113,7 +113,7 @@ class EndToEndTests(unittest.TestCase):
         run = self.run_binary(binary)
         self.assertEqual(run.returncode, 1)
         self.assertIn("runtime error: division by zero", run.stderr)
-        self.assertIn("div_by_zero.hy:2", run.stderr)
+        self.assertIn("div_by_zero.ce:2", run.stderr)
 
     def test_modulo_by_zero_is_a_runtime_error(self):
         binary, _, _ = self.build("int zero = 0;\nlog(10 % zero);\n")
@@ -123,7 +123,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_default_output_name(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "hello.hy")
+        source_path = os.path.join(directory, "hello.ce")
         support.write(source_path, 'log("ok");\n')
         result = support.cli("build", source_path, cwd=directory)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -133,7 +133,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_check_accepts_valid_program(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "valid.hy")
+        source_path = os.path.join(directory, "valid.ce")
         support.write(source_path, "int x = 1; log(x);\n")
         result = support.cli("check", source_path)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -141,7 +141,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_check_reports_type_error_location(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "bad.hy")
+        source_path = os.path.join(directory, "bad.ce")
         support.write(source_path, 'int x = "no";\n')
         result = support.cli("check", source_path)
         self.assertEqual(result.returncode, 1)
@@ -151,7 +151,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_syntax_error_location(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "bad.hy")
+        source_path = os.path.join(directory, "bad.ce")
         support.write(source_path, "int x = 1\nlog(x);\n")
         result = support.cli("check", source_path)
         self.assertEqual(result.returncode, 1)
@@ -160,7 +160,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_emit_c_to_stdout(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "prog.hy")
+        source_path = os.path.join(directory, "prog.ce")
         support.write(source_path, "int x = 1; log(x);\n")
         result = support.cli("emit-c", source_path)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -170,7 +170,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_build_with_emit_c(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "prog.hy")
+        source_path = os.path.join(directory, "prog.ce")
         support.write(source_path, 'log("ok");\n')
         binary = os.path.join(directory, "prog")
         c_path = os.path.join(directory, "prog.c")
@@ -179,11 +179,11 @@ class EndToEndTests(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(os.path.exists(c_path))
-        self.assertIn("hy_print_string", support.read(c_path))
+        self.assertIn("ce_print_string", support.read(c_path))
 
     def test_missing_c_compiler(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "prog.hy")
+        source_path = os.path.join(directory, "prog.ce")
         support.write(source_path, 'log("ok");\n')
         result = support.cli(
             "build",
@@ -198,7 +198,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_unknown_function_is_rejected_before_gcc(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "prog.hy")
+        source_path = os.path.join(directory, "prog.ce")
         support.write(source_path, "println(1);\n")
         result = support.cli("build", source_path)
         self.assertEqual(result.returncode, 1)
@@ -206,19 +206,19 @@ class EndToEndTests(unittest.TestCase):
 
     def test_functions_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "functions.hy"))
+            support.read(os.path.join(support.EXAMPLES, "functions.ce"))
         )
         result = self.run_binary(binary)
         self.assertEqual(
             result.stdout,
-            "hello, hydrogen\n"
+            "hello, cerium\n"
             "3 + 4 = 7\n"
             "5! = 120\n",
         )
 
     def test_structs_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "structs.hy"))
+            support.read(os.path.join(support.EXAMPLES, "structs.ce"))
         )
         result = self.run_binary(binary)
         self.assertEqual(
@@ -234,7 +234,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_loops_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "loops.hy"))
+            support.read(os.path.join(support.EXAMPLES, "loops.ce"))
         )
         result = self.run_binary(binary)
         self.assertEqual(
@@ -344,7 +344,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_input_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "input.hy"))
+            support.read(os.path.join(support.EXAMPLES, "input.ce"))
         )
         result = self.run_binary(
             binary, stdin="Ada\n36\n1.8\ntrue\n"
@@ -387,7 +387,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_input_invalid_int_is_a_runtime_error(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "input_bad.hy")
+        source_path = os.path.join(directory, "input_bad.ce")
         support.write(source_path, "int n = inputInt();\nlog(n);\n")
         binary = os.path.join(directory, "prog")
         result = support.cli("build", source_path, "-o", binary)
@@ -396,7 +396,7 @@ class EndToEndTests(unittest.TestCase):
         run = self.run_binary(binary, stdin="12abc\n")
         self.assertEqual(run.returncode, 1)
         self.assertIn("runtime error: invalid int input: '12abc'", run.stderr)
-        self.assertIn("input_bad.hy:1", run.stderr)
+        self.assertIn("input_bad.ce:1", run.stderr)
 
     def test_input_invalid_bool_is_a_runtime_error(self):
         binary, _, _ = self.build("bool b = inputBool(); log(b);")
@@ -446,7 +446,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_invalid_conversion_is_a_runtime_error(self):
         directory = self.make_project()
-        source_path = os.path.join(directory, "convert_bad.hy")
+        source_path = os.path.join(directory, "convert_bad.ce")
         support.write(source_path, 'log(toInt("12abc"));\n')
         binary = os.path.join(directory, "prog")
         result = support.cli("build", source_path, "-o", binary)
@@ -455,7 +455,7 @@ class EndToEndTests(unittest.TestCase):
         run = self.run_binary(binary)
         self.assertEqual(run.returncode, 1)
         self.assertIn("runtime error: invalid int value: '12abc'", run.stderr)
-        self.assertIn("convert_bad.hy:1", run.stderr)
+        self.assertIn("convert_bad.ce:1", run.stderr)
 
     def test_invalid_bool_conversion_is_a_runtime_error(self):
         binary, _, _ = self.build('log(toBool("yes"));')
@@ -465,7 +465,7 @@ class EndToEndTests(unittest.TestCase):
 
     def test_conversions_example(self):
         binary, _, _ = self.build(
-            support.read(os.path.join(support.EXAMPLES, "conversions.hy"))
+            support.read(os.path.join(support.EXAMPLES, "conversions.ce"))
         )
         result = self.run_binary(binary)
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -482,12 +482,12 @@ class CliTests(unittest.TestCase):
     def test_version(self):
         result = support.run_cli("--version")
         self.assertEqual(result.returncode, 0)
-        self.assertTrue(result.stdout.startswith("hydrogenc "))
+        self.assertTrue(result.stdout.startswith("ceriumc "))
 
     def test_no_arguments(self):
         result = support.run_cli()
         self.assertEqual(result.returncode, 2)
-        self.assertIn("usage: hydrogenc", result.stderr)
+        self.assertIn("usage: ceriumc", result.stderr)
 
     def test_unknown_command(self):
         result = support.run_cli("frobnicate")
@@ -500,14 +500,14 @@ class CliTests(unittest.TestCase):
         self.assertIn("missing input file", result.stderr)
 
     def test_invalid_option_for_check(self):
-        result = support.run_cli("check", "--static", "x.hy")
+        result = support.run_cli("check", "--static", "x.ce")
         self.assertEqual(result.returncode, 2)
         self.assertIn("not valid for 'check'", result.stderr)
 
     def test_help(self):
         result = support.run_cli("--help")
         self.assertEqual(result.returncode, 0)
-        self.assertIn("usage: hydrogenc", result.stdout)
+        self.assertIn("usage: ceriumc", result.stdout)
 
 
 if __name__ == "__main__":

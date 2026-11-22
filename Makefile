@@ -12,19 +12,19 @@ test:
 	$(PYTHON) -m unittest discover -s tests -v
 
 check:
-	./hydrogenc check examples/hello.hy
+	./ceriumc check examples/hello.ce
 
 examples: build
-	./hydrogenc build examples/hello.hy -o build/hello
-	./hydrogenc build examples/types.hy -o build/types
-	./hydrogenc build examples/arithmetic.hy -o build/arithmetic
-	./hydrogenc build examples/control_flow.hy -o build/control_flow
-	./hydrogenc build examples/loops.hy -o build/loops
-	./hydrogenc build examples/functions.hy -o build/functions
-	./hydrogenc build examples/structs.hy -o build/structs
-	./hydrogenc build examples/input.hy -o build/input
-	./hydrogenc build examples/conversions.hy -o build/conversions
-	./hydrogenc build examples/fizzbuzz.hy -o build/fizzbuzz
+	./ceriumc build examples/hello.ce -o build/hello
+	./ceriumc build examples/types.ce -o build/types
+	./ceriumc build examples/arithmetic.ce -o build/arithmetic
+	./ceriumc build examples/control_flow.ce -o build/control_flow
+	./ceriumc build examples/loops.ce -o build/loops
+	./ceriumc build examples/functions.ce -o build/functions
+	./ceriumc build examples/structs.ce -o build/structs
+	./ceriumc build examples/input.ce -o build/input
+	./ceriumc build examples/conversions.ce -o build/conversions
+	./ceriumc build examples/fizzbuzz.ce -o build/fizzbuzz
 
 build:
 	mkdir -p build
