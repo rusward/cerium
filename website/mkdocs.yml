@@ -86,9 +86,9 @@ markdown_extensions:
       custom_checkbox: true
 
 extra_css:
-  - stylesheets/extra.css
+  - stylesheets/pixel.css
 extra_javascript:
-  - javascripts/extra.js
+  - javascripts/pixel.js
 
 extra:
   generator: false
