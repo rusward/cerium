@@ -1,6 +1,6 @@
 # Cerium syntax
 
-Documentation for Cerium version 0.5. The formal EBNF grammar is in [SPEC.md](../SPEC.md).
+Documentation for Cerium version 0.6. The formal EBNF grammar is in [SPEC.md](../SPEC.md).
 
 ## 0. What makes Cerium different
 
@@ -663,7 +663,7 @@ struct User {
 - fields use `type name;`; a field type must be scalar (`int`, `double`, `bool`, or `string`);
 - at least one field is required;
 - field names are unique;
-- nested struct fields are not supported in v0.5.
+- nested struct fields are not supported in v0.6.
 
 ### Struct literals
 
@@ -850,7 +850,7 @@ func ping() -> void {
 }
 ```
 
-## 17. Limitations in v0.5
+## 17. Limitations in v0.6
 
 Not supported:
 
@@ -878,3 +878,7 @@ Not supported:
 ```
 
 Additional `build` flags: `--emit-c PATH`, `--keep-c`, `--static`, `--cc NAME`.
+
+On Windows use the installed `ceriumc` command or `ceriumc.cmd` from the repository; binaries
+get a `.exe` extension automatically. The C compiler is auto-detected (`clang` on macOS,
+`gcc` elsewhere); MSVC `cl.exe` is not supported. `--static` is not available on macOS.

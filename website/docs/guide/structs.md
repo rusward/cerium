@@ -24,7 +24,7 @@ struct User {
 - fields use `type name;`; a field type must be scalar (`int`, `double`, `bool`, or `string`);
 - at least one field is required;
 - field names are unique;
-- nested struct fields are not supported in v0.5.
+- nested struct fields are not supported in v0.6.
 
 ### Struct literals
 

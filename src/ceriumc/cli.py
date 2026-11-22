@@ -1,6 +1,7 @@
 """Command-line interface for the Cerium compiler."""
 
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -24,7 +25,7 @@ options:
   --emit-c PATH       also write the generated C source (build)
   --keep-c            keep the temporary C file and print its path
   --static            link the executable statically
-  --cc NAME           C compiler to use (default: gcc)
+  --cc NAME           C compiler to use (default: auto-detect)
   -h, --help          show this help
   --version           show version
 """
@@ -130,6 +131,33 @@ def write_text(path: str, text: str) -> int:
 
 def build_binary(c_source: str, source_path: str, options) -> int:
     output = options["output"] or default_output(source_path)
+    if os.name == "nt" and options["output"] and not os.path.splitext(output)[1]:
+        output += ".exe"
+
+    compiler = options["cc"] or find_c_compiler()
+    if compiler is None:
+        print(
+            "ceriumc: error: no supported C compiler found; "
+            "install MinGW-w64 or LLVM clang and add it to PATH, "
+            "or pass --cc PATH",
+            file=sys.stderr,
+        )
+        return 3
+
+    if os.name == "nt" and os.path.basename(compiler).lower() in ("cl", "cl.exe"):
+        print(
+            "ceriumc: error: MSVC cl is not supported; "
+            "use MinGW-w64 gcc or LLVM clang",
+            file=sys.stderr,
+        )
+        return 3
+
+    if options["static"] and sys.platform == "darwin":
+        print(
+            "ceriumc: error: static linking is not supported on macOS",
+            file=sys.stderr,
+        )
+        return 3
 
     if options["emit_c"] is not None:
         status = write_text(options["emit_c"], c_source)
@@ -150,16 +178,18 @@ def build_binary(c_source: str, source_path: str, options) -> int:
         with open(c_path, "w", encoding="utf-8") as handle:
             handle.write(c_source)
 
-        command = [options["cc"], "-std=c99", "-O2"]
+        command = [compiler, "-std=c99", "-O2"]
         if options["static"]:
             command.append("-static")
         command.extend([c_path, "-o", output])
 
         try:
-            result = subprocess.run(command, capture_output=True, text=True)
+            result = subprocess.run(
+                command, capture_output=True, text=True, errors="replace"
+            )
         except FileNotFoundError:
             print(
-                f"ceriumc: error: C compiler '{options['cc']}' not found",
+                f"ceriumc: error: C compiler '{compiler}' not found",
                 file=sys.stderr,
             )
             return 3
@@ -188,8 +218,26 @@ def build_binary(c_source: str, source_path: str, options) -> int:
             cleanup.cleanup()
 
 
+def find_c_compiler():
+    configured = os.environ.get("CC")
+    if configured:
+        return configured
+
+    if sys.platform == "darwin":
+        candidates = ("clang", "gcc", "cc")
+    else:
+        candidates = ("gcc", "clang", "cc")
+
+    for candidate in candidates:
+        if shutil.which(candidate):
+            return candidate
+    return None
+
+
 def default_output(source_path: str) -> str:
     stem = os.path.splitext(os.path.basename(source_path))[0]
+    if os.name == "nt":
+        return (stem or "a") + ".exe"
     return stem or "a.out"
 
 
@@ -203,7 +251,7 @@ def parse_options(args, command: str):
         "emit_c": None,
         "keep_c": False,
         "static": False,
-        "cc": "gcc",
+        "cc": None,
     }
 
     allowed = {

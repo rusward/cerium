@@ -20,7 +20,7 @@ and there are three loop forms — `while`, `for`, and `loop`.
 dark mode, and the complete language guide.
 
 
-> **Status:** early version 0.5.0. The language and syntax may still change.
+> **Status:** early version 0.6.0. The language and syntax may still change.
 
 ## Features
 
@@ -103,9 +103,20 @@ does not parse.
 ## Requirements
 
 - Python 3.10+
-- A C99 compiler (`gcc` by default)
+- A supported C99 compiler in `PATH`
 
-Cerium is developed and tested on Linux x86-64.
+| Platform | Status | Compiler |
+|----------|--------|----------|
+| Linux x86-64 | tested | `gcc` or `clang` |
+| macOS | tested in CI | Apple `clang` (Xcode Command Line Tools) |
+| Windows | tested in CI | MinGW-w64 `gcc` or LLVM `clang` |
+
+`ceriumc` auto-detects a compiler: `clang` first on macOS, `gcc` first elsewhere, then
+`clang`/`cc`. Use `--cc PATH` to override. MSVC `cl.exe` is not supported because its command
+line is incompatible.
+
+`--static` is not supported on macOS. On Windows, MinGW-w64 can link a standalone `.exe`
+with `--static`.
 
 ## Installation
 
@@ -117,7 +128,20 @@ python3 -m pip install -e .
 ceriumc --version
 ```
 
-You can also run the launcher from the repository root without installing:
+On Windows, use the Python launcher and the installed console script:
+
+```powershell
+git clone https://github.com/rusward/cerium.git
+cd cerium
+
+py -m venv .venv
+.venv\Scripts\activate
+python -m pip install -e .
+ceriumc --version
+```
+
+For a source checkout without installation, Unix users can run `./ceriumc`; Windows users can
+run `ceriumc.cmd` or `python -m ceriumc`.
 
 ```sh
 ./ceriumc --version
@@ -125,21 +149,23 @@ You can also run the launcher from the repository root without installing:
 ./hello
 ```
 
+On Windows the default output gets a `.exe` extension automatically.
+
 ## CLI
 
 ```
-ceriumc build <file.ce> [-o out] [--emit-c PATH] [--keep-c] [--static] [--cc gcc]
+ceriumc build <file.ce> [-o out] [--emit-c PATH] [--keep-c] [--static] [--cc NAME]
 ceriumc check <file.ce>
 ceriumc emit-c <file.ce> [-o out.c]
 ceriumc --version
 ```
 
-- `build` compiles a native binary;
+- `build` compiles a native binary and appends `.exe` on Windows when needed;
 - `check` validates syntax and types without invoking the C compiler;
 - `emit-c` prints the generated C;
 - `--emit-c PATH` saves the C source during a build;
 - `--keep-c` keeps the temporary C file;
-- `--cc NAME` selects the C compiler.
+- `--cc NAME` selects the C compiler (auto-detected by default).
 
 Exit codes: `0` success, `1` compilation/type/runtime error, `2` CLI usage error, `3` C
 backend failure.
@@ -150,8 +176,15 @@ backend failure.
 make test
 ```
 
-End-to-end tests compile real binaries and are skipped automatically when `gcc` is not
-available.
+On Windows, run the suite directly:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m unittest discover -s tests -v
+```
+
+End-to-end tests compile real binaries and are skipped automatically when no supported C
+compiler is available.
 
 ## Project structure
 
@@ -162,6 +195,7 @@ tests/           unittest suite
 docs/syntax.md   practical syntax guide
 SPEC.md          formal grammar and semantics
 logo/            logo assets
+ceriumc.cmd      Windows source-checkout launcher
 ```
 
 ## Documentation

@@ -6,8 +6,8 @@ the easiest to review.
 ## Requirements
 
 - Python 3.10+
-- A C99 compiler (`gcc` by default)
-- GNU Make (optional, used by the convenience targets)
+- A supported C99 compiler in `PATH`: `gcc` or `clang` (MinGW-w64 on Windows)
+- GNU Make (optional, used by the convenience targets; not available on Windows by default)
 
 ## Development setup
 
@@ -22,8 +22,18 @@ python3 -m pip install -e .
 make test
 ```
 
+On Windows, install MinGW-w64 or LLVM clang, then use the installed console script:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\activate
+python -m pip install -e .
+python -m unittest discover -s tests -v
+```
+
 `make test` runs the whole `unittest` suite. End-to-end tests compile real binaries and are
-skipped automatically when `gcc` is not available.
+skipped automatically when no supported C compiler is available. The CI matrix covers Linux,
+macOS, and Windows with MinGW-w64.
 
 Useful commands:
 

@@ -1,6 +1,7 @@
 """Shared helpers for the Cerium test suite."""
 
 import os
+import shutil
 import subprocess
 import sys
 
@@ -10,6 +11,28 @@ EXAMPLES = os.path.join(ROOT, "examples")
 
 if SRC not in sys.path:
     sys.path.insert(0, SRC)
+
+
+def find_c_compiler():
+    configured = os.environ.get("CC")
+    if configured:
+        return configured
+
+    if sys.platform == "darwin":
+        candidates = ("clang", "gcc", "cc")
+    else:
+        candidates = ("gcc", "clang", "cc")
+
+    for candidate in candidates:
+        path = shutil.which(candidate)
+        if path:
+            return path
+    return None
+
+
+def binary_path(directory, stem):
+    suffix = ".exe" if os.name == "nt" else ""
+    return os.path.join(directory, stem + suffix)
 
 
 def run_cli(*args, cwd=None):

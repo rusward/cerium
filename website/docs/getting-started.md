@@ -10,8 +10,13 @@ This guide takes you from a clean checkout to a running binary.
 ## Requirements
 
 - Python 3.10 or newer;
-- a C99 compiler (`gcc` by default);
-- Linux x86-64 is the tested platform.
+- a supported C99 compiler in `PATH`;
+- Linux x86-64 is tested on every change; macOS and Windows are tested in CI.
+
+On macOS install Xcode Command Line Tools (`xcode-select --install`). On Windows install
+MinGW-w64 (MSYS2 UCRT64) or LLVM clang and add it to `PATH`; MSVC `cl.exe` is not supported.
+`ceriumc` detects the compiler automatically and prefers `clang` on macOS, `gcc` elsewhere.
+Use `--cc PATH` to override.
 
 ## Install
 
@@ -36,6 +41,10 @@ This guide takes you from a clean checkout to a running binary.
 
     After installation the `ceriumc` command is available everywhere in the active
     environment.
+
+On Windows use `py -m venv .venv`, activate it with `.venv\Scripts\activate`, then run
+`python -m pip install -e .`. The installed `ceriumc` command and `ceriumc.cmd` from a source
+checkout both work. Build outputs get a `.exe` extension automatically.
 
 ## Your first program
 

@@ -1,6 +1,6 @@
 # Cerium language specification
 
-Version 0.5 (MVP).
+Version 0.6 (MVP).
 
 ## 1. Overview
 
@@ -110,7 +110,7 @@ struct Point {
 
 - Struct declarations are only allowed at top level.
 - Fields must have scalar types (`int`, `double`, `bool`, `string`); nested struct fields are
-  not supported in v0.5.
+  not supported in v0.6.
 - Field names must be unique within a struct; at least one field is required.
 - Struct types can be used for variables, parameters, and return types.
 - Struct values are passed to functions and returned from them by value.
@@ -377,11 +377,12 @@ ceriumc emit-c <file.ce> [-o out.c]
 ceriumc --version
 ```
 
-- `build` writes an executable named after the source file by default.
+- `build` writes an executable named after the source file by default; Windows appends `.exe`.
 - `--emit-c PATH` also writes the generated C source.
 - `--keep-c` keeps the temporary C file and prints its path to stderr.
-- `--static` passes `-static` to the C compiler.
-- `--cc` selects the C compiler (default `gcc`).
+- `--static` passes `-static` to the C compiler. It is not supported on macOS.
+- `--cc` selects the C compiler. By default it prefers `clang` on macOS and `gcc` elsewhere,
+  then `clang`/`cc`. MSVC `cl.exe` is not supported.
 
 Exit codes: `0` success, `1` compilation/type/runtime error, `2` CLI usage error,
 `3` C backend failure.
@@ -410,7 +411,7 @@ for (int i = 1; i <= 3; i = i + 1) {
 }
 ```
 
-## 12. Out of scope for v0.5
+## 12. Out of scope for v0.6
 
 Arrays, methods and constructors, nested structs, struct equality, `for` without clauses,
 `do while`, `switch`, casts, `++`/`+=`, ternary operator, string interpolation, generics,

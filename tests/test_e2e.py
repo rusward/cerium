@@ -6,10 +6,10 @@ import unittest
 
 import support
 
-GCC = shutil.which("gcc")
+CC = support.find_c_compiler()
 
 
-@unittest.skipUnless(GCC, "gcc is required for end-to-end tests")
+@unittest.skipUnless(CC, "a C compiler is required for end-to-end tests")
 class EndToEndTests(unittest.TestCase):
     def make_project(self):
         directory = tempfile.mkdtemp(prefix="ceriumc-test-")
@@ -20,8 +20,10 @@ class EndToEndTests(unittest.TestCase):
         directory = self.make_project()
         source_path = os.path.join(directory, name)
         support.write(source_path, source)
-        binary = os.path.join(directory, "prog")
-        result = support.cli("build", source_path, "-o", binary)
+        binary = support.binary_path(directory, "prog")
+        result = support.cli(
+            "build", source_path, "-o", binary, "--cc", CC
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
         return binary, directory, source_path
 
@@ -106,8 +108,10 @@ class EndToEndTests(unittest.TestCase):
         directory = self.make_project()
         source_path = os.path.join(directory, "div_by_zero.ce")
         support.write(source_path, "int zero = 0;\nlog(10 / zero);\n")
-        binary = os.path.join(directory, "prog")
-        result = support.cli("build", source_path, "-o", binary)
+        binary = support.binary_path(directory, "prog")
+        result = support.cli(
+            "build", source_path, "-o", binary, "--cc", CC
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
 
         run = self.run_binary(binary)
@@ -127,7 +131,7 @@ class EndToEndTests(unittest.TestCase):
         support.write(source_path, 'log("ok");\n')
         result = support.cli("build", source_path, cwd=directory)
         self.assertEqual(result.returncode, 0, result.stderr)
-        binary = os.path.join(directory, "hello")
+        binary = support.binary_path(directory, "hello")
         self.assertTrue(os.path.exists(binary))
         self.assertEqual(self.run_binary(binary).stdout, "ok\n")
 
@@ -172,10 +176,10 @@ class EndToEndTests(unittest.TestCase):
         directory = self.make_project()
         source_path = os.path.join(directory, "prog.ce")
         support.write(source_path, 'log("ok");\n')
-        binary = os.path.join(directory, "prog")
+        binary = support.binary_path(directory, "prog")
         c_path = os.path.join(directory, "prog.c")
         result = support.cli(
-            "build", source_path, "-o", binary, "--emit-c", c_path
+            "build", source_path, "-o", binary, "--emit-c", c_path, "--cc", CC
         )
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(os.path.exists(c_path))
@@ -189,7 +193,7 @@ class EndToEndTests(unittest.TestCase):
             "build",
             source_path,
             "-o",
-            os.path.join(directory, "prog"),
+            support.binary_path(directory, "prog"),
             "--cc",
             "definitely-not-a-compiler",
         )
@@ -389,8 +393,10 @@ class EndToEndTests(unittest.TestCase):
         directory = self.make_project()
         source_path = os.path.join(directory, "input_bad.ce")
         support.write(source_path, "int n = inputInt();\nlog(n);\n")
-        binary = os.path.join(directory, "prog")
-        result = support.cli("build", source_path, "-o", binary)
+        binary = support.binary_path(directory, "prog")
+        result = support.cli(
+            "build", source_path, "-o", binary, "--cc", CC
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
 
         run = self.run_binary(binary, stdin="12abc\n")
@@ -448,8 +454,10 @@ class EndToEndTests(unittest.TestCase):
         directory = self.make_project()
         source_path = os.path.join(directory, "convert_bad.ce")
         support.write(source_path, 'log(toInt("12abc"));\n')
-        binary = os.path.join(directory, "prog")
-        result = support.cli("build", source_path, "-o", binary)
+        binary = support.binary_path(directory, "prog")
+        result = support.cli(
+            "build", source_path, "-o", binary, "--cc", CC
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
 
         run = self.run_binary(binary)

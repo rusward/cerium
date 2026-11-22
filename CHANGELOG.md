@@ -2,6 +2,22 @@
 
 All notable changes to Cerium are documented in this file.
 
+## [0.6.0] - 2026-11-22
+
+### Added
+
+- automatic C compiler detection: `clang` first on macOS, `gcc` first elsewhere, then
+  `clang`/`cc`;
+- Windows `.exe` output handling and a `ceriumc.cmd` source-checkout launcher;
+- macOS and Windows MinGW CI jobs;
+- platform support documentation and cross-platform test helpers.
+
+### Changed
+
+- `--cc` now defaults to auto-detection instead of hard-coded `gcc`;
+- static linking on macOS reports a clear error instead of invoking the linker;
+- end-to-end tests use the detected compiler and platform executable suffix.
+
 ## [0.5.0] - 2026-11-22
 
 ### Added

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ceriumc"
-version = "0.5.0"
+version = "0.6.0"
 description = "Cerium: a small statically typed language with a C99 backend"
 readme = "README.md"
 requires-python = ">=3.10"
