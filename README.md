@@ -16,6 +16,10 @@ Cerium (`ceriumc`) compiles `.ce` to C99 and builds a native binary with `gcc`.
 Functions are declared with `func ... -> type`, structs are built with literals and no `new`,
 and there are three loop forms — `while`, `for`, and `loop`.
 
+**Documentation:** <https://rusward.github.io/cerium/> — English and Russian, with search,
+dark mode, and the complete language guide.
+
+
 > **Status:** early version 0.5.0. The language and syntax may still change.
 
 ## Features
@@ -162,10 +166,19 @@ logo/            logo assets
 
 ## Documentation
 
+- [Online documentation](https://rusward.github.io/cerium/) — bilingual EN/RU site with search,
+  dark mode, and the full guide.
 - [docs/syntax.md](docs/syntax.md) — syntax guide and examples.
 - [SPEC.md](SPEC.md) — EBNF grammar, types, semantics, and diagnostics.
 - [CHANGELOG.md](CHANGELOG.md) — change history.
 - [CONTRIBUTING.md](CONTRIBUTING.md) — how to build, test, and contribute.
+
+The site lives in `website/` and is built with MkDocs Material. To preview it locally:
+
+```sh
+make docs-install
+make docs-serve
+```
 
 ## Roadmap
 

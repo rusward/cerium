@@ -1,12 +1,30 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)/src
 
-.PHONY: all test check examples build install clean
+DOCS_VENV ?= website/.venv
+DOCS_PYTHON := $(CURDIR)/$(DOCS_VENV)/bin/python
+DOCS_MKDOCS := .venv/bin/mkdocs
+
+.PHONY: all test check examples build install docs-install docs-serve docs-build clean
 
 all: test
 
 install:
 	$(PYTHON) -m pip install -e .
+
+docs-install:
+	$(PYTHON) -m venv $(DOCS_VENV)
+	$(DOCS_PYTHON) -m pip install -r website/requirements.txt
+
+docs-serve:
+	cp SPEC.md website/docs/spec.md
+	cp CHANGELOG.md website/docs/changelog.md
+	cd website && $(DOCS_MKDOCS) serve
+
+docs-build:
+	cp SPEC.md website/docs/spec.md
+	cp CHANGELOG.md website/docs/changelog.md
+	cd website && $(DOCS_MKDOCS) build --strict
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v

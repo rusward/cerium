@@ -4,6 +4,11 @@ All notable changes to Cerium are documented in this file.
 
 ## [0.5.0] - 2026-11-22
 
+### Added
+
+- bilingual documentation site under `website/`, built with MkDocs Material and deployed to
+  GitHub Pages.
+
 ### Changed
 
 - **BREAKING:** the project is renamed from Hydrogen to Cerium because the old name was

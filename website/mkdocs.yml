@@ -1,0 +1,128 @@
+site_name: Cerium
+site_description: A small statically typed language with C#-like syntax and a C99 backend.
+site_url: https://rusward.github.io/cerium/
+repo_url: https://github.com/rusward/cerium
+repo_name: rusward/cerium
+edit_uri: edit/main/website/docs/
+copyright: Copyright &copy; 2026 Cerium contributors
+docs_dir: docs
+site_dir: site
+use_directory_urls: true
+strict: true
+
+theme:
+  name: material
+  language: en
+  logo: assets/cerium-icon.png
+  favicon: assets/cerium-icon.png
+  font: false
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.sections
+    - navigation.indexes
+    - navigation.tracking
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - toc.follow
+
+plugins:
+  - search
+  - i18n:
+      docs_structure: folder
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: ru
+          name: Русский
+          build: true
+          theme:
+            language: ru
+          nav_translations:
+            Home: Главная
+            Getting started: Начало работы
+            Guide: Руководство
+            Program basics: Основы программы
+            Types and variables: Типы и переменные
+            Expressions and operators: Выражения и операторы
+            Control flow and scope: Управляющие конструкции и области видимости
+            Functions: Функции
+            Structs: Структуры
+            Input, output and conversions: Ввод, вывод и преобразования
+            Errors: Ошибки
+            Examples and cheat sheet: Примеры и шпаргалка
+            Command line: Командная строка
+            Specification: Спецификация
+            Changelog: История изменений
+            Contributing: Участие в проекте
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra_css:
+  - stylesheets/extra.css
+extra_javascript:
+  - javascripts/extra.js
+
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/rusward/cerium
+      name: Cerium on GitHub
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Guide:
+      - guide/index.md
+      - Program basics: guide/basics.md
+      - Types and variables: guide/types.md
+      - Expressions and operators: guide/expressions.md
+      - Control flow and scope: guide/control-flow.md
+      - Functions: guide/functions.md
+      - Structs: guide/structs.md
+      - Input, output and conversions: guide/io.md
+      - Errors: guide/errors.md
+  - Examples and cheat sheet: examples.md
+  - Command line: cli.md
+  - Specification: spec.md
+  - Changelog: changelog.md
+  - Contributing: https://github.com/rusward/cerium/blob/main/CONTRIBUTING.md

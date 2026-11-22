@@ -9,3 +9,7 @@ venv/
 *.o
 *.out
 
+# Documentation build output
+website/site/
+website/.venv/
+

@@ -75,4 +75,19 @@ SPEC.md           formal grammar and semantics
 - Describe the change, the motivation, and any user-visible syntax changes.
 - Update `CHANGELOG.md` for user-visible changes.
 
+## Documentation site
+
+The public documentation lives in `website/docs/` and is built with MkDocs Material. The English
+pages are at the root of that directory, and Russian translations are under `website/docs/ru/`.
+Root `SPEC.md` and `CHANGELOG.md` are copied into the site during `make docs-build` and in CI.
+
+```sh
+make docs-install   # install mkdocs-material and the i18n plugin
+make docs-serve     # live preview on http://127.0.0.1:8000
+make docs-build     # strict build, including both languages
+```
+
+When changing a page, update the corresponding page under `ru/` as well. Keep navigation labels
+in `website/mkdocs.yml` and their `nav_translations` in sync.
+
 By contributing you agree that your changes are licensed under the MIT License.
