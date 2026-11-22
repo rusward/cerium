@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="logo/cerium-logo-ref.png" alt="Cerium mascot" width="420">
+  <img src="logo/cerium-logo.png" alt="Cerium logo" width="420">
 </p>
 
 <h1 align="center">Cerium</h1>
