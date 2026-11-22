@@ -147,6 +147,17 @@ python -m pip install -e .
 ceriumc --version
 ```
 
+If you use `uv`, install `ceriumc` as an isolated PATH tool without activating a venv:
+
+```sh
+cd cerium
+uv tool install --editable . --python 3.12
+ceriumc --version
+```
+
+`uv tool update-shell` adds `~/.local/bin` to PATH if it is missing. The same pattern works on
+Windows and macOS. `pipx install --editable .` is an equivalent alternative.
+
 For a source checkout without installation, Unix users can run `./ceriumc`; Windows users can
 run `ceriumc.cmd` or `python -m ceriumc`.
 

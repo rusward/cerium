@@ -48,6 +48,16 @@ MinGW-w64 (MSYS2 UCRT64) или LLVM clang и добавь его в `PATH`; MSV
 `python -m pip install -e .`. Работают и установленная команда `ceriumc`, и `ceriumc.cmd`
 из репозитория. Собранные файлы автоматически получают расширение `.exe`.
 
+Если используешь `uv`, можно поставить `ceriumc` как изолированный PATH-инструмент без venv:
+
+```sh
+uv tool install --editable . --python 3.12
+ceriumc --version
+```
+
+`uv tool update-shell` добавляет `~/.local/bin` в PATH, если его там нет. Аналогичный вариант —
+`pipx install --editable .`.
+
 ## Первая программа
 
 Создай `hello.ce`:

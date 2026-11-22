@@ -49,6 +49,16 @@ On Windows use `py -m venv .venv`, activate it with `.venv\Scripts\activate`, th
 `python -m pip install -e .`. The installed `ceriumc` command and `ceriumc.cmd` from a source
 checkout both work. Build outputs get a `.exe` extension automatically.
 
+If you use `uv`, you can install `ceriumc` as an isolated PATH tool without a venv:
+
+```sh
+uv tool install --editable . --python 3.12
+ceriumc --version
+```
+
+`uv tool update-shell` adds `~/.local/bin` to PATH when needed. `pipx install --editable .`
+is an equivalent alternative.
+
 ## Your first program
 
 Create `hello.ce`:
