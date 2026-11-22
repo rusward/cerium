@@ -35,12 +35,15 @@ Use `--cc PATH` to override.
     ```sh
     git clone https://github.com/rusward/cerium.git
     cd cerium
-    python3 -m pip install -e .
+    python3 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install -e .
     ceriumc --version
     ```
 
     After installation the `ceriumc` command is available everywhere in the active
-    environment.
+    environment. On Fedora/Debian, never use `--break-system-packages`; the venv is the
+    supported path.
 
 On Windows use `py -m venv .venv`, activate it with `.venv\Scripts\activate`, then run
 `python -m pip install -e .`. The installed `ceriumc` command and `ceriumc.cmd` from a source

@@ -124,9 +124,16 @@ with `--static`.
 git clone https://github.com/rusward/cerium.git
 cd cerium
 
-python3 -m pip install -e .
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
 ceriumc --version
 ```
+
+Fedora, Debian, and other distributions may mark the system Python as externally managed
+(PEP 668). Do **not** use `--break-system-packages`; create a virtual environment instead, as
+shown above. If `python3 -m venv` is unavailable, install the distro `python3-venv` package or
+use `uv venv`.
 
 On Windows, use the Python launcher and the installed console script:
 

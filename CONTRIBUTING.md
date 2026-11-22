@@ -15,7 +15,9 @@ the easiest to review.
 git clone https://github.com/rusward/cerium.git
 cd cerium
 
-python3 -m pip install -e .
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e .
 # or run without installing:
 ./ceriumc --version
 

@@ -35,11 +35,14 @@ MinGW-w64 (MSYS2 UCRT64) или LLVM clang и добавь его в `PATH`; MSV
     ```sh
     git clone https://github.com/rusward/cerium.git
     cd cerium
-    python3 -m pip install -e .
+    python3 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install -e .
     ceriumc --version
     ```
 
     После установки команда `ceriumc` доступна в любом месте активного окружения.
+    На Fedora/Debian не используй `--break-system-packages` — правильный путь через venv.
 
 На Windows используй `py -m venv .venv`, активируй `.venv\Scripts\activate`, затем
 `python -m pip install -e .`. Работают и установленная команда `ceriumc`, и `ceriumc.cmd`
