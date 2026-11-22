@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block htmltitle %}
+  {% if page.is_homepage %}
+    <title>Cerium</title>
+  {% else %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
